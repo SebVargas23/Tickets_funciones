@@ -1,0 +1,999 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  color: red;
+  font-size: 0.8em;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Global styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html, #root {
+  height: 100%;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to bottom, #3B2069, #7E3DC5);
+  color: #333;
+}
+
+/* App Container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+
+/* css login */
+.login-container {
+  background: url('imagenes/fondologin.jpg') no-repeat center center/cover; /* Asegúrate de que esta ruta sea correcta */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* Esto hace que el contenedor ocupe toda la pantalla */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box {
+  background: rgba(255, 255, 255, 0.5);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  width: 320px;
+}
+
+.login-box h2 {
+  margin-bottom: 20px;
+  color: rgb(0, 0, 0);
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px 40px 10px 15px;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  border-radius: 25px;
+  color: rgb(0, 0, 0);
+  outline: none;
+}
+
+.input-group .icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: white;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.options a {
+  color: #B19CD9;
+  text-decoration: none;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #20035f;
+  border: none;
+  border-radius: 25px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #8F79BA;
+}
+
+p {
+  margin-top: 10px;
+}
+
+p a {
+  color: #B19CD9;
+  text-decoration: none;
+}
+
+.back-button {
+  position: absolute; /* Para posicionarlo en la esquina superior izquierda */
+  top: 10px;
+  left: 10px;
+  padding: 10px 15px;
+  background-color: #f44336; /* Color de fondo rojo */
+  color: white; /* Color de texto blanco */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: #d32f2f; /* Color más oscuro al pasar el mouse */
+}
+
+
+/* CSS TICKET */
+
+.view-tickets-link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #28a745; /* Color verde */
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1em;
+  text-align: center;
+  transition: background-color 0.3s;
+}
+
+.view-tickets-link:hover {
+  background-color: #218838; /* Color verde más oscuro al pasar el ratón */
+}
+
+
+.tickets-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.ticket-form {
+  background-color: white;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 400px; /* Ajusta según necesites */
+}
+
+.input-group {
+  display: flex;
+  align-items: center; /* Alinea los elementos verticalmente */
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  margin-bottom: 5px;
+}
+
+.input-group input,
+.input-group textarea {
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+  margin-top: 5px;
+  border: 1px solid #ccc; /* Bordes similares a los select */
+  border-radius: 4px; /* Bordes redondeados */
+  box-sizing: border-box; /* Para incluir el padding en el ancho total */
+  resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+.input-group select {
+  padding: 8px; /* Reducido para hacerlo más compacto */
+  font-size: 14px; /* Ajustado para que sea más pequeño */
+  width: 100%; /* Asegúrate de que ocupe todo el ancho disponible */
+  margin-top: 5px; /* Espaciado entre el label y el input/select */
+  border: 1px solid #ccc; /* Agregado para darle un borde */
+  border-radius: 4px; /* Bordes redondeados */
+  box-sizing: border-box; /* Para incluir el padding en el ancho total */
+  flex: 1; /* Toma el espacio restante */
+  padding: 10px; /* Espaciado dentro del select */
+  margin-left: 10px; /* Espacio entre el emoji y el select */
+}
+
+.input-group select {
+  appearance: none; /* Quita el estilo predeterminado del select en algunos navegadores */
+
+  background-size: 12px; /* Tamaño del icono */
+}
+
+.input-group select option {
+  padding: 10px; /* Espaciado interno para opciones del select */
+}
+
+button {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px; /* Bordes redondeados en el botón */
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.error {
+  color: red;
+  font-size: 12px; /* Tamaño de fuente más pequeño para los mensajes de error */
+}
+
+.success {
+  color: green;
+  font-size: 12px; /* Tamaño de fuente más pequeño para los mensajes de éxito */
+}
+
+
+.back-button {
+  position: absolute; /* Para posicionarlo en la esquina superior izquierda */
+  top: 10px;
+  left: 10px;
+  padding: 10px 15px;
+  background-color: #f44336; /* Color de fondo rojo */
+  color: white; /* Color de texto blanco */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: #d32f2f; /* Color más oscuro al pasar el mouse */
+}
+
+.icon {
+  font-size: 1.5rem; /* Ajusta el tamaño del emoji si es necesario */
+  margin-right: 10px; /* Espacio entre el emoji y el select */
+}
+
+/*CSS TICKETS LISTA*/
+.tickets-list-container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #333;
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.tickets-row {
+  display: flex;
+  overflow-x: auto; /* Permite el desplazamiento horizontal */
+  flex-direction: column;
+  gap: 20px; /* Espaciado entre los tickets */
+}
+
+.ticket-item {
+  min-width: 250px; /* Ancho mínimo para cada ticket */
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ticket-title {
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.ticket-details p {
+  font-size: 1em;
+  color: #333;
+  margin: 5px 0;
+}
+
+.create-ticket-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #28a745; /* Color verde */
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1em;
+  text-align: center;
+  transition: background-color 0.3s;
+}
+
+.create-ticket-button:hover {
+  background-color: #218838; /* Color verde más oscuro al pasar el ratón */
+}
+
+/* Header Styles */
+.header {
+  width: 100%;
+  height: 60px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  width: 40px;
+  margin-right: 15px;
+}
+
+.header-search {
+  padding: 8px 15px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  width: 300px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  background-color: #ee0c0c;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+.header .user-info {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.header .user-info span {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+/* Layout after header */
+.main-content {
+  display: flex;
+  flex-grow: 1;
+}
+
+/* Contenedor principal del formulario de edición del ticket */
+.ticket-section-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Tarjeta de ticket (diseño de comentarios) */
+.ticket-card {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Cabecera del ticket */
+.ticket-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.ticket-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.avatar-placeholder {
+  font-size: 18px;
+  color: #888;
+}
+
+.ticket-info h4 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.ticket-info span {
+  font-size: 14px;
+  color: #888;
+}
+
+/* Grupo de input en el formulario */
+.input-group {
+  margin-top: 15px;
+}
+
+.input-group label {
+  display: block;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  color: #333;
+  resize: none;
+  background-color: #fff;
+}
+/* Button styles */
+.button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.button-primary {
+  background-color: #007bff;
+}
+
+.button-primary:hover {
+  background-color: #0056b3;
+}
+
+.button-danger {
+  background-color: #dc3545;
+}
+
+.button-danger:hover {
+  background-color: #c82333;
+}
+
+.button-success {
+  background-color: #28a745;
+}
+
+.button-success:hover {
+  background-color: #218838;
+}
+
+.buttons-container {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.back-to-tickets-button,
+.view-closed-tickets-button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.back-to-tickets-button:hover,
+.view-closed-tickets-button:hover {
+  background-color: #0056b3;
+}
+
+/* Contenedor de opciones de navegación de tickets (volviendo a lista, ver tickets cerrados) */
+.ticket-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+  display: flex;
+  padding: 20px;
+  text-align: center;
+}
+
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #fff;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-widgets {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.widget {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 150px;
+  text-align: center;
+}
+
+.widget h3 {
+  margin-bottom: 10px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  width: 40px;
+  margin-right: 15px;
+}
+
+.header-search {
+  padding: 8px 15px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  width: 300px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  background-color: #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 250px;
+  background-color: #343a40;
+  color: white;
+  padding-top: 80px; /* To push down below header */
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 99;
+  overflow-y: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  padding: 15px 20px;
+  width: 100%;
+}
+
+.sidebar li a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.sidebar li a:hover {
+  background-color: #495057;
+  display: block;
+  width: 100%;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+
+
+/* Content Area */
+.main-content {
+  margin-left: 250px; /* Espacio reservado para el Sidebar */
+  margin-top: 60px; /* Espacio reservado para el Header */
+  padding: 20px;
+  width: calc(100% - 250px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: linear-gradient(to bottom, #3B2069, #7E3DC5);
+  min-height: 100vh;
+}
+
+/* Dashboard styles */
+.dashboard-overview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #333;
+}
+
+.dashboard-overview h1 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.dashboard-overview p {
+  font-size: 16px;
+  color: #666;
+}
+
+.dashboard-widgets {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.widget {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 150px;
+  text-align: center;
+}
+
+.widget h3 {
+  margin-bottom: 10px;
+}
+
+/*REGISTRO STYLE*/
+.registration-container {
+  display: flex;
+  gap: 30px;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.user-profile-section {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 30%;
+  color: #333;
+}
+
+.user-avatar {
+  display: inline-block; /* Para que se respete el centrado de texto */
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 20px; /* Ajusta el margen si es necesario */
+}
+
+.follow-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.description {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.account-details-section {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex: 1;
+}
+
+.account-details-section h3 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.input-group label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.update-account-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.update-account-button:hover {
+  background-color: #0056b3;
+}
+
+/*CSS LISTA TICKETS*/
+.tickets-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #fff;
+  font-size: 0.9em;
+  color: #333;
+}
+
+.tickets-table th,
+.tickets-table td {
+  padding: 10px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tickets-table th {
+  background-color: #f4f4f6;
+  font-weight: bold;
+}
+
+.tickets-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.tickets-table tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+/* Colores para los estados de los tickets */
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  display: inline-block;
+  font-size: 0.9em;
+}
+
+.status-abierto {
+  background-color: #28a745; /* Verde */
+}
+
+.status-asignado {
+  background-color: #007bff; /* Azul */
+}
+
+.status-pendiente {
+  background-color: #ffc107; /* Amarillo */
+}
+
+.status-resuelto {
+  background-color: #17a2b8; /* Cian */
+}
+
+.status-cerrado {
+  background-color: #6c757d; /* Gris */
+}
+
+.status-reabierto {
+  background-color: #fd7e14; /* Naranja */
+}
+
+.status-cancelado {
+  background-color: #dc3545; /* Rojo */
+}
+
+.status-en_espera_de_aprobacion {
+  background-color: #6610f2; /* Morado */
+}
+
+.status-escalado {
+  background-color: #20c997; /* Verde Agua */
+}
+
+.status-suspendido {
+  background-color: #343a40; /* Gris Oscuro */
+}
+
+.status-duplicado {
+  background-color: #adb5bd; /* Gris Claro */
+}
+
+/* Colores para las prioridades de los tickets */
+.priority-badge {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  display: inline-block;
+  font-size: 0.9em;
+}
+
+.priority-alta {
+  background-color: #dc3545; /* Rojo para prioridad alta */
+}
+
+.priority-media {
+  background-color: #ffc107; /* Amarillo para prioridad media */
+  color: black; /* Texto negro para mayor contraste */
+}
+
+.priority-baja {
+  background-color: #28a745; /* Verde para prioridad baja */
+}
+
+
+/* DASHBOARD STYLE */
+.dashboard-container {
+  padding: 20px;
+  background-color: #f4f6f8;
+}
+
+.dashboard-stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 180px;
+  text-align: center;
+}
+
+.stat-card h3 {
+  color: #555;
+  font-size: 1.1em;
+}
+
+.stat-card p {
+  font-size: 2em;
+  color: #333;
+}
+
+.chart-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
