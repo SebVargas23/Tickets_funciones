@@ -25,16 +25,16 @@ const EditTicket = () => {
       try {
         const [ticketRes, categoriasRes, prioridadesRes, estadosRes] = await Promise.all([
           axios.get(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, {
-            headers: { 'Authorization': `Bearer ${token}` },
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           }),
           axios.get('https://heron-eminent-starling.ngrok-free.app/categorias/', {
-            headers: { 'Authorization': `Bearer ${token}` },
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           }),
           axios.get('https://heron-eminent-starling.ngrok-free.app/prioridades/', {
-            headers: { 'Authorization': `Bearer ${token}` },
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           }),
           axios.get('https://heron-eminent-starling.ngrok-free.app/estados/', {
-            headers: { 'Authorization': `Bearer ${token}` },
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           })
         ]);
 
@@ -75,7 +75,7 @@ const EditTicket = () => {
 
     try {
       await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
-        headers: {
+        headers: {'ngrok-skip-browser-warning': 'any-value' ,
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
@@ -107,7 +107,7 @@ const EditTicket = () => {
 
     try {
       await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
-        headers: {
+        headers: {'ngrok-skip-browser-warning': 'any-value' ,
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
@@ -141,7 +141,7 @@ const EditTicket = () => {
 
     try {
       await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
-        headers: {
+        headers: {'ngrok-skip-browser-warning': 'any-value' ,
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },

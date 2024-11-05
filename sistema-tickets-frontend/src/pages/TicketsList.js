@@ -16,7 +16,6 @@ const TicketsList = () => {
   const [filtroCategoria, setFiltroCategoria] = useState('');
   const [filtroPrioridad, setFiltroPrioridad] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
-  const [busquedaUsuario, setBusquedaUsuario] = useState(''); // Campo de búsqueda
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [userRole, setUserRole] = useState('');
@@ -48,12 +47,12 @@ const TicketsList = () => {
       try {
         const token = localStorage.getItem('token');
         const [ticketsRes, usuariosRes, categoriasRes, prioridadesRes, estadosRes, serviciosRes] = await Promise.all([
-          axios.get('https://heron-eminent-starling.ngrok-free.app/tickets/', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/get-user-data/', { headers: { Authorization: `Bearer ${token}` } }), // Obtener usuarios
-          axios.get('https://heron-eminent-starling.ngrok-free.app/categorias/', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/prioridades/', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/estados/', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/servicios/', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('https://heron-eminent-starling.ngrok-free.app/tickets/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }),
+          axios.get('https://heron-eminent-starling.ngrok-free.app/get-user-data/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }), // Obtener usuarios
+          axios.get('https://heron-eminent-starling.ngrok-free.app/categorias/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }),
+          axios.get('https://heron-eminent-starling.ngrok-free.app/prioridades/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }),
+          axios.get('https://heron-eminent-starling.ngrok-free.app/estados/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }),
+          axios.get('https://heron-eminent-starling.ngrok-free.app/servicios/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }),
         ]);
 
         console.log(ticketsRes.data);

@@ -76,7 +76,7 @@ const Tickets = () => {
 
       try {
         const response = await fetch(url, {
-          headers: {
+          headers: {'ngrok-skip-browser-warning': 'any-value' ,
             'Authorization': `Bearer ${token}`,
           },
         });
@@ -150,7 +150,7 @@ const Tickets = () => {
     try {
       const response = await fetch('http://localhost:8000/tickets/', {
         method: 'POST',
-        headers: {
+        headers: {'ngrok-skip-browser-warning': 'any-value' ,
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },

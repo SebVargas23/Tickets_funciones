@@ -95,6 +95,12 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'ngrok-skip-browser-warning',  # add this line
+    # other headers you may need
+]
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',

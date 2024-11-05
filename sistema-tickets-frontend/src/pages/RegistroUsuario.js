@@ -32,7 +32,10 @@ const RegistroUsuario = () => {
 
         const fetchCargos = async () => {
             try {
-                const response = await axios.get('https://heron-eminent-starling.ngrok-free.app/cargos/');
+                const response = await axios.get('https://heron-eminent-starling.ngrok-free.app/cargos/', {
+                    headers: {'ngrok-skip-browser-warning': 'any-value' },
+                  });
+                //importante añadir header
                 setCargos(response.data);
             } catch (error) {
                 console.error('Error al obtener los cargos:', error);
