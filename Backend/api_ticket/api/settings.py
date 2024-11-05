@@ -31,7 +31,9 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1:8000'
 ]
+
 # ngrok http --url=heron-eminent-starling.ngrok-free.app 8000
+
 SESSION_COOKIE_SAMESITE = None
 CSRF_COOKIE_SAMESITE = None
 SESSION_COOKIE_SECURE = True  # Esto asegura que las cookies solo se envíen en HTTPS
