@@ -9,7 +9,10 @@ const TicketsList = () => {
   const [categorias, setCategorias] = useState([]);
   const [prioridades, setPrioridades] = useState([]);
   const [estados, setEstados] = useState([]);
-  const [servicios, setServicios] = useState([]);
+  const [servicios, setServicios] = useState([]); // Nuevo estado para almacenar servicios
+  const [usuarios, setUsuarios] = useState([]);
+  const [sugerenciasUsuario, setSugerenciasUsuario] = useState([]); // Lista de usuarios para el filtro
+  const [filtroUsuario, setFiltroUsuario] = useState(''); // Estado para el filtro por usuario
   const [filtroCategoria, setFiltroCategoria] = useState('');
   const [filtroPrioridad, setFiltroPrioridad] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
@@ -20,6 +23,15 @@ const TicketsList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.filtro-usuario')) {
+        setSugerenciasUsuario([]);
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+    
+
     const token = localStorage.getItem('token');
     if (token) {
       const decodedToken = decodeToken(token);
@@ -34,8 +46,10 @@ const TicketsList = () => {
       }
       setLoading(true);
       try {
-        const [ticketsRes, categoriasRes, prioridadesRes, estadosRes, serviciosRes] = await Promise.all([
+        const token = localStorage.getItem('token');
+        const [ticketsRes, usuariosRes, categoriasRes, prioridadesRes, estadosRes, serviciosRes] = await Promise.all([
           axios.get('http://127.0.0.1:8000/tickets/', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('http://127.0.0.1:8000/get-user-data/', { headers: { Authorization: `Bearer ${token}` } }), // Obtener usuarios
           axios.get('http://127.0.0.1:8000/categorias/', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://127.0.0.1:8000/prioridades/', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://127.0.0.1:8000/estados/', { headers: { Authorization: `Bearer ${token}` } }),
@@ -46,6 +60,7 @@ const TicketsList = () => {
         const openTickets = ticketsRes.data.filter(ticket => ticket.estado !== estadoCerrado);
 
         setTickets(openTickets);
+        setUsuarios(usuariosRes.data); // Guardar usuarios
         setCategorias(categoriasRes.data);
         setPrioridades(prioridadesRes.data);
         setEstados(estadosRes.data);
@@ -59,22 +74,41 @@ const TicketsList = () => {
     };
 
     fetchData();
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [navigate]);
 
   const getNombrePorId = (id, lista, campo = 'nom_categoria') => {
     const item = lista.find(item => item.id === id);
     return item ? item[campo] : 'Desconocido';
   };
+  
+  const manejarCambioFiltroUsuario = (e) => {
+    const valor = e.target.value;
+    setFiltroUsuario(valor);
+  
+    if (valor) {
+      const sugerencias = usuarios.filter(usuario =>
+        usuario.nom_usuario.toLowerCase().includes(valor.toLowerCase())
+      );
+      setSugerenciasUsuario(sugerencias);
+    } else {
+      setSugerenciasUsuario([]);
+    }
+  };
+  
 
   const aplicarFiltros = () => {
+    console.log("Filtro Usuario:", filtroUsuario);
+    console.log("Filtro Categoria:", filtroCategoria);
+    console.log("Filtro Prioridad:", filtroPrioridad);
+    console.log("Filtro Estado:", filtroEstado);
+
     return tickets.filter(ticket => {
+      const cumpleUsuario = filtroUsuario ? ticket.user?.toLowerCase().includes(filtroUsuario.toLowerCase()) : true;
       const cumpleCategoria = filtroCategoria ? ticket.categoria === parseInt(filtroCategoria) : true;
       const cumplePrioridad = filtroPrioridad ? ticket.prioridad === parseInt(filtroPrioridad) : true;
       const cumpleEstado = filtroEstado ? ticket.estado === parseInt(filtroEstado) : true;
-      const cumpleBusquedaUsuario = busquedaUsuario
-        ? (ticket.user && ticket.user.toLowerCase().includes(busquedaUsuario.toLowerCase()))
-        : true;
-      return cumpleCategoria && cumplePrioridad && cumpleEstado && cumpleBusquedaUsuario;
+      return cumpleUsuario && cumpleCategoria && cumplePrioridad && cumpleEstado;
     });
   };
 
@@ -86,18 +120,34 @@ const TicketsList = () => {
   return (
     <div className="tickets-list-container">
       <h2>📋 Lista de Tickets</h2>
-
+      <div className="filtros">
       {userRole === 'admin' && (
+        <div className="filtro-usuario">
         <input
           type="text"
-          placeholder="Buscar por nombre o correo del usuario"
-          value={busquedaUsuario}
-          onChange={e => setBusquedaUsuario(e.target.value)}
-          className="search-bar"
+          placeholder="Buscar usuario..."
+          value={filtroUsuario}
+          onChange={manejarCambioFiltroUsuario}
         />
+        {sugerenciasUsuario.length > 0 && (
+          <ul className="sugerencias-lista">
+            {sugerenciasUsuario.map((sugerencia) => (
+              <li
+                key={sugerencia.id}
+                onClick={() => {
+                  setFiltroUsuario(sugerencia.nom_usuario);
+                  setSugerenciasUsuario([]);
+                }}
+              >
+                {sugerencia.nom_usuario}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
       )}
 
-      <div className="filtros">
+      
         <select onChange={e => setFiltroCategoria(e.target.value)} value={filtroCategoria}>
           <option value="">Filtrar por Categoría</option>
           {categorias.map(categoria => (

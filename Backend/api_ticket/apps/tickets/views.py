@@ -78,62 +78,94 @@ class TicketListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        # Si el usuario es admin, retorna todos los tickets; si no, solo los tickets creados por él X Usuario
+        print(f"Authenticated user: {user}, role: {user.role}")
+
+        # Return all tickets for admin, else only tickets created by the user
         if user.role == 'admin':
+            print("User is admin, returning all tickets.")
             return Ticket.objects.all()
+        
+        print("User is not admin, returning tickets created by this user.")
         return Ticket.objects.filter(user=user)
 
     def perform_create(self, serializer):
-        # Obtener el usuario autenticado
+        # Retrieve authenticated user
         usuario_autenticado = self.request.user
+        print(f"Authenticated user for creation: {usuario_autenticado}")
 
-        # Verificar si es una instancia válida del modelo de usuario personalizado
+        # Ensure user is instance of custom Usuario model
         if isinstance(usuario_autenticado, Usuario):
             serializer.save(user=usuario_autenticado)
+            print("Ticket created successfully with user:", usuario_autenticado.nom_usuario)
         else:
             raise ValueError("El usuario autenticado no es una instancia de Usuario.")
 
-        # Crear la fecha de creación en FechaTicket
+        # Create 'Creacion' date in FechaTicket
         FechaTicket.objects.create(ticket=serializer.instance, tipo_fecha='Creacion')
+        print("FechaTicket entry created for ticket creation date.")
 
 
-
-# Vista para manejar GET, PUT, PATCH y DELETE en un ticket específico
 class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
 
     def retrieve(self, request, *args, **kwargs):
         ticket = self.get_object()
+        print("Retrieving ticket:", ticket.id)
+
+        # Serialize ticket data
         ticket_data = self.get_serializer(ticket).data
-        # Obtener la fecha de creación más reciente de FechaTicket para este ticket
+
+        # Retrieve the most recent 'Creacion' date for the ticket
         fecha_creacion = FechaTicket.objects.filter(ticket=ticket, tipo_fecha='Creacion').order_by('-fecha').first()
-        ticket_data['fecha_creacion'] = fecha_creacion.fecha if fecha_creacion else None
+        if fecha_creacion:
+            ticket_data['fecha_creacion'] = fecha_creacion.fecha
+            print("Fecha de creación encontrada:", fecha_creacion.fecha)
+        else:
+            print("No se encontró fecha de creación.")
+
         return Response(ticket_data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
+        print(f"Updating ticket ID: {instance.id}")
 
-        # Manejar la actualización del estado
+        # Handle state update
         estado_id = request.data.get('estado')
         if estado_id:
             estado_obj = get_object_or_404(Estado, id=estado_id)
             request.data['estado'] = estado_obj.id
+            print("Estado updated to:", estado_obj.nom_estado)
 
-        # Manejar la actualización del usuario
+        # Handle user update
         user_id = request.data.get('user')
         if user_id:
             try:
-                user = Usuario.objects.get(nom_usuario=nom_usuario)
-                request.data['user'] = user.id  # Asegurarse de usar el ID interno para la actualización
+                user = Usuario.objects.get(id=user_id)
+                request.data['user'] = user.id
+                print("Usuario updated to:", user.nom_usuario)
             except Usuario.DoesNotExist:
                 raise ValidationError({"user": "Usuario no encontrado"})
+        
+        # Remove empty dates if present
+        if request.data.get('fecha_creacion') == '':
+            print("Removing empty 'fecha_creacion' from request data")
+            del request.data['fecha_creacion']
+        if request.data.get('fecha_cierre') == '':
+            print("Removing empty 'fecha_cierre' from request data")
+            del request.data['fecha_cierre']
 
         # Serializar y actualizar el ticket
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
+
+        if not serializer.is_valid():
+            # Print serializer errors if validation fails
+            print("Serializer Validation Errors:", serializer.errors)
+        else:
+            print("Validated Data:", serializer.validated_data)
         self.perform_update(serializer)
+        print("Ticket updated successfully:", instance)
 
         # Si el estado cambia a "Cerrado", crea o actualiza la fecha de cierre
         if estado_obj.nom_estado == "Cerrado":
@@ -141,9 +173,12 @@ class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
                 ticket=instance, tipo_fecha='Cierre',
                 defaults={'fecha': timezone.now()}
             )
-            if not created:
+            if created:
+                print("FechaTicket entry for cierre created:", fecha_cierre.fecha)
+            else:
                 fecha_cierre.fecha = timezone.now()
                 fecha_cierre.save()
+                print("FechaTicket entry for cierre updated to:", fecha_cierre.fecha)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
