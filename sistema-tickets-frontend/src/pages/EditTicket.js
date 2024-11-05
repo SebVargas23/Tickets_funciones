@@ -102,8 +102,8 @@ const EditTicket = () => {
       fecha_cierre: new Date().toISOString(),
     };
 
-    if (!ticketData.user) delete ticketData.user;
-    if (!ticketData.fecha_creacion) delete ticketData.fecha_creacion;
+    delete ticketData.user;
+    delete ticketData.fecha_creacion;
 
     try {
       await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
