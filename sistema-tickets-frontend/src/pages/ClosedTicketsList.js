@@ -25,16 +25,16 @@ const ClosedTicketsList = () => {
 
       try {
         const [ticketsRes, categoriasRes, prioridadesRes, estadosRes] = await Promise.all([
-          axios.get('http://127.0.0.1:8000/tickets/', {
+          axios.get('https://heron-eminent-starling.ngrok-free.app/tickets/', {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/categorias/', {
+          axios.get('https://heron-eminent-starling.ngrok-free.app/categorias/', {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/prioridades/', {
+          axios.get('https://heron-eminent-starling.ngrok-free.app/prioridades/', {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/estados/', {
+          axios.get('https://heron-eminent-starling.ngrok-free.app/estados/', {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
         ]);

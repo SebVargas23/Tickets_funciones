@@ -48,12 +48,12 @@ const TicketsList = () => {
       try {
         const token = localStorage.getItem('token');
         const [ticketsRes, usuariosRes, categoriasRes, prioridadesRes, estadosRes, serviciosRes] = await Promise.all([
-          axios.get('http://127.0.0.1:8000/tickets/', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://127.0.0.1:8000/get-user-data/', { headers: { Authorization: `Bearer ${token}` } }), // Obtener usuarios
-          axios.get('http://127.0.0.1:8000/categorias/', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://127.0.0.1:8000/prioridades/', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://127.0.0.1:8000/estados/', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://127.0.0.1:8000/servicios/', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('https://heron-eminent-starling.ngrok-free.app/tickets/', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('https://heron-eminent-starling.ngrok-free.app/get-user-data/', { headers: { Authorization: `Bearer ${token}` } }), // Obtener usuarios
+          axios.get('https://heron-eminent-starling.ngrok-free.app/categorias/', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('https://heron-eminent-starling.ngrok-free.app/prioridades/', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('https://heron-eminent-starling.ngrok-free.app/estados/', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('https://heron-eminent-starling.ngrok-free.app/servicios/', { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
         const estadoCerrado = estadosRes.data.find(estado => estado.nom_estado === "Cerrado")?.id;

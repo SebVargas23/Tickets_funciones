@@ -24,16 +24,16 @@ const EditTicket = () => {
 
       try {
         const [ticketRes, categoriasRes, prioridadesRes, estadosRes] = await Promise.all([
-          axios.get(`http://127.0.0.1:8000/tickets/${id}/`, {
+          axios.get(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/categorias/', {
+          axios.get('https://heron-eminent-starling.ngrok-free.app/categorias/', {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/prioridades/', {
+          axios.get('https://heron-eminent-starling.ngrok-free.app/prioridades/', {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/estados/', {
+          axios.get('https://heron-eminent-starling.ngrok-free.app/estados/', {
             headers: { 'Authorization': `Bearer ${token}` },
           })
         ]);
@@ -74,7 +74,7 @@ const EditTicket = () => {
     delete ticketData.fecha_creacion;
 
     try {
-      await axios.patch(`http://127.0.0.1:8000/tickets/${id}/`, ticketData, {
+      await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -106,7 +106,7 @@ const EditTicket = () => {
     if (!ticketData.fecha_creacion) delete ticketData.fecha_creacion;
 
     try {
-      await axios.patch(`http://127.0.0.1:8000/tickets/${id}/`, ticketData, {
+      await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -140,7 +140,7 @@ const EditTicket = () => {
     delete ticketData.fecha_creacion;
 
     try {
-      await axios.patch(`http://127.0.0.1:8000/tickets/${id}/`, ticketData, {
+      await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
