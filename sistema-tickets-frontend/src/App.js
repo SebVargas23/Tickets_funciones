@@ -31,20 +31,23 @@ axios.interceptors.response.use(
 function App() {
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [userRole, setUserRole] = useState('');
-
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       const decodedToken = decodeToken(token);
       if (decodedToken) {
         setNombreUsuario(decodedToken.nom_usuario);
-        setUserRole(decodedToken.role); // Guardar el rol del usuario
+        console.log(decodedToken.nom_usuario);
+        setUserRole(decodedToken.role);
+        console.log(decodedToken.role);// Guardar el rol del usuario
       }
     }
   }, []);
+  console.log(userRole)
 
   return (
     <Router>
+      
       <MainContent nombreUsuario={nombreUsuario} userRole={userRole} />
     </Router>
   );

@@ -1,0 +1,87 @@
+[
+    {
+      "id_categoria": 1,
+      "titulo": "Soporte técnico",
+      "descripcion": "Guía para el manejo de problemas técnicos reportados por los usuarios.",
+      "instrucciones": [
+        "Paso 1: Verificar el problema reportado.",
+        "Paso 2: Hacer un diagnóstico preliminar.",
+        "Paso 3: Aplicar soluciones básicas o escalar según sea necesario.",
+        "Paso 4: Documentar el problema y la solución aplicada.",
+        "Paso 5: Informar al usuario sobre el estado de su solicitud."
+      ]
+    },
+    {
+      "id_categoria": 2,
+      "titulo": "Hardware y equipos",
+      "descripcion": "Instrucciones para evaluar y reparar problemas de hardware.",
+      "instrucciones": [
+        "Paso 1: Realizar pruebas de hardware.",
+        "Paso 2: Verificar la compatibilidad de los componentes.",
+        "Paso 3: Reemplazar componentes defectuosos.",
+        "Paso 4: Configurar los nuevos componentes instalados.",
+        "Paso 5: Realizar pruebas de rendimiento post-reparación."
+      ]
+    },
+    {
+      "id_categoria": 3,
+      "titulo": "Software corporativo",
+      "descripcion": "Guía para la instalación y configuración de software en el entorno corporativo.",
+      "instrucciones": [
+        "Paso 1: Verificar licencias y permisos.",
+        "Paso 2: Instalar el software según el manual corporativo.",
+        "Paso 3: Realizar configuraciones específicas.",
+        "Paso 4: Probar el software para asegurar que funcione correctamente.",
+        "Paso 5: Documentar la instalación y cualquier configuración especial realizada."
+      ]
+    },
+    {
+      "id_categoria": 4,
+      "titulo": "Redes y conectividad",
+      "descripcion": "Instrucciones para solucionar problemas de conexión y configuración de red.",
+      "instrucciones": [
+        "Paso 1: Comprobar el estado de la conexión.",
+        "Paso 2: Verificar el hardware de red.",
+        "Paso 3: Configurar o reiniciar equipos de red.",
+        "Paso 4: Actualizar configuraciones de red según sea necesario.",
+        "Paso 5: Realizar pruebas de conectividad para asegurarse de que todo funcione correctamente."
+      ]
+    },
+    {
+      "id_categoria": 5,
+      "titulo": "Consultoría y asesoramiento",
+      "descripcion": "Proceso para brindar consultoría y asesoramiento a los clientes.",
+      "instrucciones": [
+        "Paso 1: Entender las necesidades del cliente.",
+        "Paso 2: Ofrecer opciones de solución.",
+        "Paso 3: Crear un plan de implementación.",
+        "Paso 4: Establecer un cronograma y recursos necesarios.",
+        "Paso 5: Seguimiento post-implementación para asegurar la satisfacción del cliente."
+      ]
+    },
+    {
+      "id_categoria": 6,
+      "titulo": "Mantenimiento preventivo",
+      "descripcion": "Guía para realizar mantenimiento preventivo en equipos y sistemas.",
+      "instrucciones": [
+        "Paso 1: Realizar un inventario del hardware y software.",
+        "Paso 2: Programar mantenimiento regular para cada equipo.",
+        "Paso 3: Limpiar físicamente los equipos de polvo y suciedad.",
+        "Paso 4: Actualizar software y realizar copias de seguridad.",
+        "Paso 5: Revisar el rendimiento del sistema y hacer ajustes necesarios."
+      ]
+    },
+    {
+      "id_categoria": 7,
+      "titulo": "Seguridad informática",
+      "descripcion": "Instrucciones para asegurar los sistemas y datos de la organización.",
+      "instrucciones": [
+        "Paso 1: Implementar políticas de seguridad para los usuarios.",
+        "Paso 2: Usar contraseñas seguras y cambiar las contraseñas regularmente.",
+        "Paso 3: Realizar auditorías de seguridad periódicas.",
+        "Paso 4: Capacitar a los empleados sobre prácticas de seguridad.",
+        "Paso 5: Instalar y mantener actualizado el software antivirus y de firewall."
+      ]
+    }
+  ]
+  

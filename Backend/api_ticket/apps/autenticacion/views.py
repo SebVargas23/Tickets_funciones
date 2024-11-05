@@ -6,8 +6,9 @@ from rest_framework import status
 from .serializers import UserCreateSerializer
 from rest_framework import generics
 from .models import Cargo
-from .serializers import CargoSerializer, CustomTokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CargoSerializer, CustomTokenObtainPairSerializer, UsuarioSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView # type: ignore
+from django.contrib.auth import get_user_model
 
 class LoginView(KnoxLoginView):
     permission_classes = (permissions.AllowAny,)
@@ -47,6 +48,13 @@ class CargoListAPIView(generics.ListAPIView):
     queryset = Cargo.objects.all()
     serializer_class = CargoSerializer
     permission_classes = (permissions.AllowAny,)
+
+class UsuarioListAPIView(generics.ListAPIView):
+    User = get_user_model()
+    queryset = User.objects.all()
+    serializer_class = UsuarioSerializer
+    #permission_classes = (permissions.IsAuthenticated)
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
