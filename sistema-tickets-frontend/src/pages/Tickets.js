@@ -89,10 +89,10 @@ const Tickets = () => {
     };
 
     // Cargar todas las listas de datos
-    fetchData('http://localhost:8000/categorias/', setCategorias);
-    fetchData('http://localhost:8000/prioridades/', setPrioridades);
-    fetchData('http://localhost:8000/servicios/', setServicios);
-    fetchData('http://localhost:8000/estados/', setEstados);
+    fetchData('https://heron-eminent-starling.ngrok-free.app//categorias/', setCategorias);
+    fetchData('https://heron-eminent-starling.ngrok-free.app//prioridades/', setPrioridades);
+    fetchData('https://heron-eminent-starling.ngrok-free.app//servicios/', setServicios);
+    fetchData('https://heron-eminent-starling.ngrok-free.app//estados/', setEstados);
   }, [navigate]); // gets the data
 
   useEffect(() => {
