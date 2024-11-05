@@ -997,3 +997,156 @@ h2 {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 }
+
+/* guia de usuario y lista de sugerencias */
+
+
+.filtro-usuario {
+  max-width: 30%;
+  position: relative; /* Para que la lista de sugerencias se posicione correctamente */
+  margin-bottom: 20px; /* Espacio inferior entre el filtro y otros elementos */
+}
+
+.filtro-usuario input {
+  width: 100%; /* Hacer que el input ocupe el ancho completo */
+  padding: 10px; /* Espaciado interno */
+  border: 1px solid #ccc; /* Borde ligero */
+  border-radius: 4px; /* Bordes redondeados */
+  font-size: 16px; /* Tamaño de fuente */
+}
+
+.sugerencias-lista {
+  position: absolute; /* Para que se superponga sobre otros elementos */
+  background-color: white; /* Color de fondo blanco */
+  border: 1px solid #ccc; /* Borde ligero */
+  width: 100%; /* Alineación con el input */
+  max-height: 150px; /* Altura máxima de la lista */
+  overflow-y: auto; /* Permitir el desplazamiento si hay muchas sugerencias */
+  list-style-type: none; /* Quitar los puntos de la lista */
+  padding: 0; /* Sin espaciado */
+  margin: 0; /* Sin margen */
+  z-index: 1; /* Asegurarse de que la lista esté por encima de otros elementos */
+}
+
+.sugerencias-lista li {
+  padding: 10px; /* Espaciado interno en cada sugerencia */
+  cursor: pointer; /* Cambia el cursor al pasar sobre la sugerencia */
+  transition: max-height 0.4s ease, opacity 0.4s ease;
+}
+
+.sugerencias-lista li:hover {
+  background-color: #f0f0f0; /* Color de fondo al pasar el mouse */
+}
+
+.sugerencias-lista li:active {
+  background-color: #e0e0e0; /* Color de fondo al hacer clic */
+}
+
+
+
+.guia-usuario-titulo {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.lista-desplegable {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.lista-desplegable select {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.custom-modal {
+  max-width: 600px; /* Ajusta el ancho máximo según prefieras */
+  max-height: 80vh; /* Ajusta la altura máxima para evitar que ocupe toda la pantalla */
+  margin: auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow-y: auto; /* Para permitir desplazamiento si el contenido es muy largo */
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente para el overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+/* Estilo para el contenedor de la guía de usuario */
+.guia-usuario-container {
+  max-width: 800px; /* Ancho máximo para el contenedor */
+  margin: 20px auto; /* Centrado horizontal */
+  padding: 20px; /* Espaciado interno */
+  background-color: #f9f9f9; /* Color de fondo */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+/* Estilo para el título de la guía */
+.guia-usuario-titulo {
+  font-size: 2rem; /* Tamaño de fuente grande */
+  margin-bottom: 20px; /* Espaciado inferior */
+  color: #333; /* Color del texto */
+  text-align: center; /* Centrado del texto */
+}
+
+/* Estilo para la lista desplegable */
+.lista-desplegable {
+  margin-bottom: 20px; /* Espaciado inferior */
+}
+
+/* Estilo para las etiquetas dentro de la lista desplegable */
+.lista-desplegable label {
+  font-weight: bold; /* Texto en negrita */
+  margin-right: 10px; /* Espaciado a la derecha */
+}
+
+/* Estilo para el elemento <select> */
+.lista-desplegable select {
+  padding: 10px; /* Espaciado interno */
+  border: 1px solid #ccc; /* Borde */
+  border-radius: 4px; /* Bordes redondeados */
+  font-size: 1rem; /* Tamaño de fuente */
+}
+
+/* Estilo para el contenido de la guía */
+.guia-contenido {
+  margin-top: 20px; /* Espaciado superior */
+}
+
+/* Estilo para los títulos dentro del contenido de la guía */
+.guia-contenido h3 {
+  font-size: 1.5rem; /* Tamaño de fuente para subtítulos */
+  color: #0056b3; /* Color del texto */
+}
+
+/* Estilo para la lista de instrucciones */
+.guia-contenido ul {
+  list-style-type: disc; /* Tipo de viñetas */
+  padding-left: 20px; /* Espaciado izquierdo */
+}
+
+/* Estilo para los elementos de la lista de instrucciones */
+.guia-contenido li {
+  margin-bottom: 10px; /* Espaciado inferior entre instrucciones */
+  line-height: 1.5; /* Espaciado entre líneas */
+  color: #555; /* Color del texto */
+}
+

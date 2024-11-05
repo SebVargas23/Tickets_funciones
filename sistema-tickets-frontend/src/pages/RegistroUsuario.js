@@ -32,7 +32,7 @@ const RegistroUsuario = () => {
 
         const fetchCargos = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/cargos/');
+                const response = await axios.get('http://127.0.0.1:8000/cargos/');
                 setCargos(response.data);
             } catch (error) {
                 console.error('Error al obtener los cargos:', error);

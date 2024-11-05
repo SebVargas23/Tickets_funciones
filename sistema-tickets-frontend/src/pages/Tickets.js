@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import Modal from 'react-modal'; // Modal para el formulario
 import '../App.css';
+import guias from '../json_test/guias.json';
+
+// Configura el estilo del modal
+Modal.setAppElement('#root');
 
 const Tickets = () => {
   const navigate = useNavigate();
@@ -11,12 +16,54 @@ const Tickets = () => {
     prioridad: '',
     servicio: '',
     estado: '', // Inicialmente vacío, se llenará al cargar los estados
-  });
+  });// captura los datos del formulario para posterior post request
+  
 
   const [categorias, setCategorias] = useState([]);
   const [prioridades, setPrioridades] = useState([]);
   const [servicios, setServicios] = useState([]);
   const [estados, setEstados] = useState([]);
+  
+  const [modalIsOpen, setModalIsOpen] = useState(false); // Estado para el modal
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [guiaContenido, setGuiaContenido] = useState(null);
+
+  const handleGuiaChange = (e) => {
+    const categoriaId = parseInt(e.target.value);
+    console.log(categoriaId)
+    setSelectedCategoryId(categoriaId);
+
+    if (categoriaId === '') {
+      setGuiaContenido(null); // Si no hay categoría, no hay contenido
+    } else {
+      // Aquí busca el contenido de la guía basado en el id de la categoría
+      const guia = guias.find(guia => guia.id_categoria === Number(categoriaId));
+      setGuiaContenido(guia || null);
+
+      const relatedService = servicios.find(
+        (servicio) => servicio.categoria_id === categoriaId
+      );
+
+      setFormData((prevData) => ({
+        ...prevData,
+        categoria: categoriaId, // Establece la categoría en formData
+        servicio: relatedService ? relatedService.id : '',
+      }));
+    }
+  }; // maneja cambios en el la guia
+  const handleOpenModal = () => {
+    setModalIsOpen(true);
+  }; // maneja el abrir el modal
+
+  const handleCloseModal = () => {
+    setModalIsOpen(false);
+    setFormData((prevData) => ({
+      ...prevData,
+      titulo: '',
+      comentario: '',
+      prioridad: '',
+    }));
+  }; // manjea el cerrar el modal
 
   useEffect(() => {
     const fetchData = async (url, setState) => {
@@ -35,6 +82,7 @@ const Tickets = () => {
         });
         const data = await response.json();
         setState(data);
+        console.log('data: ', data)
       } catch (error) {
         console.error(`Error al cargar los datos desde ${url}:`, error);
       }
@@ -45,10 +93,9 @@ const Tickets = () => {
     fetchData('http://localhost:8000/prioridades/', setPrioridades);
     fetchData('http://localhost:8000/servicios/', setServicios);
     fetchData('http://localhost:8000/estados/', setEstados);
-  }, [navigate]);
+  }, [navigate]); // gets the data
 
   useEffect(() => {
-    // Establecer el estado predeterminado como "Abierto" si existe en la lista de estados
     const estadoAbierto = estados.find((estado) => estado.nom_estado === 'Abierto');
     if (estadoAbierto) {
       setFormData((prevData) => ({
@@ -56,7 +103,10 @@ const Tickets = () => {
         estado: estadoAbierto.id,
       }));
     }
-  }, [estados]);
+  }, [estados]);// Establecer el estado predeterminado como "Abierto" si existe en la lista de estados
+
+
+  
 
   const handleCategoryChange = (e) => {
     const categoriaId = parseInt(e.target.value);
@@ -73,7 +123,7 @@ const Tickets = () => {
       ...prevData,
       servicio: relatedService ? relatedService.id : '',
     }));
-  };
+  }; // manejo de cambios de categoria
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,7 +131,7 @@ const Tickets = () => {
       ...prevData,
       [name]: value,
     }));
-  };
+  }; //manejo de cambios generales
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,7 +159,7 @@ const Tickets = () => {
 
       if (response.ok) {
         alert('Ticket creado con éxito');
-        navigate('/tickets-list');
+        navigate('/tickets');
         setFormData({
           titulo: '',
           comentario: '',
@@ -127,17 +177,58 @@ const Tickets = () => {
       console.error('Error:', error);
       alert('Hubo un problema al crear el ticket');
     }
-  };
-
+  }; // manda request post con datos importantes
   return (
-    <div className="tickets-container">
-      <button className="back-button" onClick={() => navigate('/login')}>
-        ⬅ Volver al Login
+    <div className="guia-usuario-container">
+      <h2 className="guia-usuario-titulo">Creación de tickets</h2>
+
+      <div className="lista-desplegable">
+        <label>Selecciona una categoría:</label>
+        <select onChange={handleGuiaChange} value={selectedCategoryId}>
+          <option value="">Información general</option>
+          {categorias.map((categoria) => (
+            <option key={categoria.id} value={categoria.id}>
+              {categoria.nom_categoria}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Renderiza información general si no hay categoría seleccionada */}
+      {selectedCategoryId === '' ? (
+        <p>infro general</p>
+      ) : (
+        // Renderiza las instrucciones de la guía seleccionada
+        guiaContenido && (
+          <div className="guia-contenido">
+            <h3>{guiaContenido.titulo}</h3>
+            <ul>
+              {guiaContenido.instrucciones.map((instruccion, index) => (
+                <li key={index}>{instruccion}</li>
+              ))}
+            </ul>
+          </div>
+        )
+      )}
+
+      <button onClick={handleOpenModal} className="open-modal-button">
+        🎫 Crear Ticket
       </button>
 
+      {/* Modal para el formulario de creación de ticket */}
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={handleCloseModal}
+        contentLabel="Crear Ticket"
+        className="custom-modal"
+        overlayClassName="modal-overlay"
+      >
+        <h2>Crear Ticket</h2>
+
       <form className="ticket-form" onSubmit={handleSubmit}>
-        <h2 className="form-title">🎫 Crear Ticket</h2>
-        {/* Título */}
+          {/* Campos del formulario */}
+
+          {/* Titulo */}
         <div className="input-group">
           <label>📝 Título</label>
           <input
@@ -224,6 +315,7 @@ const Tickets = () => {
             value={formData.estado}
             onChange={handleChange}
             required
+            disabled
           >
             {estados.map((estado) => (
               <option key={estado.id} value={estado.id}>
@@ -236,9 +328,11 @@ const Tickets = () => {
         <button type="submit">🚀 Crear Ticket</button>
       </form>
 
+        {/*<button onClick={handleCloseModal}>Cerrar</button>*/}
       <Link to="/tickets-list" className="view-tickets-link">
         📋 Ver Lista de Tickets
       </Link>
+      </Modal>
     </div>
   );
 };

@@ -73,6 +73,8 @@ class UsuarioManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('role', 'admin')  # Asegura el rol 'admin' para superusuarios
+        if 'cargo' not in extra_fields or extra_fields['cargo'] is None:
+            extra_fields['cargo'] = Cargo.objects.first()
 
         return self.create_user(rut_usuario, dv_rut_usuario, correo, password, **extra_fields)
 
@@ -90,7 +92,6 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # Indica si puede acceder al panel de administración
     is_superuser = models.BooleanField(default=False)  # Bandera para superusuario
-    
     date_joined = models.DateTimeField(default=timezone.now)
 
     objects = UsuarioManager()

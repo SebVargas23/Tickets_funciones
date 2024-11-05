@@ -35,7 +35,7 @@ class ServicioSerializer(serializers.ModelSerializer):
 
 class TicketSerializer(serializers.ModelSerializer):
     fecha_creacion = serializers.SerializerMethodField()
-    fecha_cierre = serializers.DateTimeField(allow_null=True, required=False)
+    fecha_cierre = serializers.SerializerMethodField()
     user = serializers.SlugRelatedField(
         slug_field='nom_usuario',
         queryset=Usuario.objects.all(),
@@ -54,6 +54,12 @@ class TicketSerializer(serializers.ModelSerializer):
         fecha_creacion = FechaTicket.objects.filter(ticket=obj, tipo_fecha='Creacion').first()
         if fecha_creacion:
             return localtime(fecha_creacion.fecha).strftime('%Y-%m-%d %H:%M:%S')  # Formato ajustado
+        return None
+    def get_fecha_cierre(self, obj):
+        # Obtener la fecha de cierre del modelo FechaTicket
+        fecha_cierre = FechaTicket.objects.filter(ticket=obj, tipo_fecha='Cierre').first()
+        if fecha_cierre:
+            return localtime(fecha_cierre.fecha).strftime('%Y-%m-%d %H:%M:%S')
         return None
 
     def get_user(self, obj):
