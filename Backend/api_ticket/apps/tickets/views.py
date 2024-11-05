@@ -142,8 +142,8 @@ class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
         user_id = request.data.get('user')
         if user_id:
             try:
-                user = Usuario.objects.get(id=user_id)
-                request.data['user'] = user.id
+                user = Usuario.objects.get(nom_usuario=user_id)
+                request.data['user'] = user
                 print("Usuario updated to:", user.nom_usuario)
             except Usuario.DoesNotExist:
                 raise ValidationError({"user": "Usuario no encontrado"})

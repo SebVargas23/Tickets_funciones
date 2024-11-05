@@ -70,8 +70,6 @@ const EditTicket = () => {
     };
 
     // Filtrar los campos de solo lectura antes de enviar
-    delete ticketData.user;
-    delete ticketData.fecha_creacion;
 
     try {
       await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
