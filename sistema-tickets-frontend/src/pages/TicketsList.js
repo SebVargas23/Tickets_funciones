@@ -58,7 +58,13 @@ const TicketsList = () => {
 
         const estadoCerrado = estadosRes.data.find(estado => estado.nom_estado === "Cerrado")?.id;
         const openTickets = ticketsRes.data.filter(ticket => ticket.estado !== estadoCerrado);
-        console.log(ticketsRes.data, usuariosRes.data, categoriasRes.data, prioridadesRes.data, estadosRes.data, serviciosRes.data);
+        console.log(ticketsRes.data);
+        console.log(usuariosRes.data); 
+        console.log(categoriasRes.data);
+        console.log(prioridadesRes.data)
+        console.log(estadosRes.data)
+        console.log(serviciosRes.data);
+
         setTickets(openTickets);
         setUsuarios(usuariosRes.data); // Guardar usuarios
         setCategorias(categoriasRes.data);
