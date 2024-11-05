@@ -56,14 +56,15 @@ const TicketsList = () => {
           axios.get('https://heron-eminent-starling.ngrok-free.app/servicios/', { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
-        const estadoCerrado = estadosRes.data.find(estado => estado.nom_estado === "Cerrado")?.id;
-        const openTickets = ticketsRes.data.filter(ticket => ticket.estado !== estadoCerrado);
         console.log(ticketsRes.data);
         console.log(usuariosRes.data); 
         console.log(categoriasRes.data);
         console.log(prioridadesRes.data)
         console.log(estadosRes.data)
         console.log(serviciosRes.data);
+        const estadoCerrado = estadosRes.data.find(estado => estado.nom_estado === "Cerrado")?.id;
+        const openTickets = ticketsRes.data.filter(ticket => ticket.estado !== estadoCerrado);
+        
 
         setTickets(openTickets);
         setUsuarios(usuariosRes.data); // Guardar usuarios
