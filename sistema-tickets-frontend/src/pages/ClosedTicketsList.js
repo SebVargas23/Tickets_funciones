@@ -25,17 +25,17 @@ const ClosedTicketsList = () => {
 
       try {
         const [ticketsRes, categoriasRes, prioridadesRes, estadosRes] = await Promise.all([
-          axios.get('http://127.0.0.1:8000/tickets/', {
-            headers: { 'Authorization': `Bearer ${token}` },
+          axios.get('https://heron-eminent-starling.ngrok-free.app/tickets/', {
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/categorias/', {
-            headers: { 'Authorization': `Bearer ${token}` },
+          axios.get('https://heron-eminent-starling.ngrok-free.app/categorias/', {
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/prioridades/', {
-            headers: { 'Authorization': `Bearer ${token}` },
+          axios.get('https://heron-eminent-starling.ngrok-free.app/prioridades/', {
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/estados/', {
-            headers: { 'Authorization': `Bearer ${token}` },
+          axios.get('https://heron-eminent-starling.ngrok-free.app/estados/', {
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           }),
         ]);
 

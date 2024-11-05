@@ -21,3 +21,9 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+# front end dependencies
+/sistema-tickets-frontend/node_modules
+/sistema-tickets-frontend/package-lock.json
+# Backend dependencies
+/backend/env/
+/backend/__pycache__/

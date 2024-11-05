@@ -12,7 +12,9 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/dashboard/stats/');
+                const response = await axios.get('https://heron-eminent-starling.ngrok-free.app/api/dashboard/stats/', {
+                    headers: {'ngrok-skip-browser-warning': 'any-value' },
+                  });
                 setStats(response.data);
             } catch (err) {
                 setError("Error al cargar estadísticas");

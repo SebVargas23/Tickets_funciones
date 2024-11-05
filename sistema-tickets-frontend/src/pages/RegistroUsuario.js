@@ -32,7 +32,10 @@ const RegistroUsuario = () => {
 
         const fetchCargos = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/cargos/');
+                const response = await axios.get('https://heron-eminent-starling.ngrok-free.app/cargos/', {
+                    headers: {'ngrok-skip-browser-warning': 'any-value' },
+                  });
+                //importante añadir header
                 setCargos(response.data);
             } catch (error) {
                 console.error('Error al obtener los cargos:', error);
@@ -60,7 +63,7 @@ const RegistroUsuario = () => {
         const formDataToSend = isAdmin ? formData : { ...formData, role: 'usuario' };
 
         try {
-            const response = await axios.post('http://127.0.0.1:8000/registrar/', formDataToSend);
+            const response = await axios.post('https://heron-eminent-starling.ngrok-free.app/registrar/', formDataToSend);
             console.log('Usuario registrado:', response.data);
             navigate('/login');
         } catch (err) {

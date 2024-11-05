@@ -24,17 +24,17 @@ const EditTicket = () => {
 
       try {
         const [ticketRes, categoriasRes, prioridadesRes, estadosRes] = await Promise.all([
-          axios.get(`http://127.0.0.1:8000/tickets/${id}/`, {
-            headers: { 'Authorization': `Bearer ${token}` },
+          axios.get(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, {
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/categorias/', {
-            headers: { 'Authorization': `Bearer ${token}` },
+          axios.get('https://heron-eminent-starling.ngrok-free.app/categorias/', {
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/prioridades/', {
-            headers: { 'Authorization': `Bearer ${token}` },
+          axios.get('https://heron-eminent-starling.ngrok-free.app/prioridades/', {
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/estados/', {
-            headers: { 'Authorization': `Bearer ${token}` },
+          axios.get('https://heron-eminent-starling.ngrok-free.app/estados/', {
+            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
           })
         ]);
 
@@ -74,8 +74,8 @@ const EditTicket = () => {
     delete ticketData.fecha_creacion;
 
     try {
-      await axios.patch(`http://127.0.0.1:8000/tickets/${id}/`, ticketData, {
-        headers: {
+      await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
+        headers: {'ngrok-skip-browser-warning': 'any-value' ,
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
@@ -106,8 +106,8 @@ const EditTicket = () => {
     if (!ticketData.fecha_creacion) delete ticketData.fecha_creacion;
 
     try {
-      await axios.patch(`http://127.0.0.1:8000/tickets/${id}/`, ticketData, {
-        headers: {
+      await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
+        headers: {'ngrok-skip-browser-warning': 'any-value' ,
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
@@ -140,8 +140,8 @@ const EditTicket = () => {
     delete ticketData.fecha_creacion;
 
     try {
-      await axios.patch(`http://127.0.0.1:8000/tickets/${id}/`, ticketData, {
-        headers: {
+      await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
+        headers: {'ngrok-skip-browser-warning': 'any-value' ,
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
