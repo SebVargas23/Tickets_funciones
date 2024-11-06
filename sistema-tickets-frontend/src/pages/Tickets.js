@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Modal from 'react-modal'; // Modal para el formulario
 import '../App.css';
 import guias from '../json_test/guias.json';
+import apiClient from '../components/apiClient';
 
 // Configura el estilo del modal
 Modal.setAppElement('#root');
@@ -25,21 +26,21 @@ const Tickets = () => {
   const [estados, setEstados] = useState([]);
   
   const [modalIsOpen, setModalIsOpen] = useState(false); // Estado para el modal
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(NaN);
   const [guiaContenido, setGuiaContenido] = useState(null);
 
   const handleGuiaChange = (e) => {
     const categoriaId = parseInt(e.target.value);
-    console.log(categoriaId)
+    
     setSelectedCategoryId(categoriaId);
-
-    if (categoriaId === '') {
+    if (isNaN(selectedCategoryId)) {
       setGuiaContenido(null); // Si no hay categoría, no hay contenido
     } else {
       // Aquí busca el contenido de la guía basado en el id de la categoría
       const guia = guias.find(guia => guia.id_categoria === Number(categoriaId));
+      console.log(e.target.value)
       setGuiaContenido(guia || null);
-
+      
       const relatedService = servicios.find(
         (servicio) => servicio.categoria_id === categoriaId
       );
@@ -75,24 +76,24 @@ const Tickets = () => {
       }
 
       try {
-        const response = await fetch(url, {
+        const response = await apiClient.get(url, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
-        const data = await response.json();
-        setState(data);
-        console.log('data: ', data)
+        console.log(response.data)
+        setState(response.data);
+        console.log('data: ', response.data)
       } catch (error) {
         console.error(`Error al cargar los datos desde ${url}:`, error);
       }
     };
 
     // Cargar todas las listas de datos
-    fetchData('http://localhost:8000/categorias/', setCategorias);
-    fetchData('http://localhost:8000/prioridades/', setPrioridades);
-    fetchData('http://localhost:8000/servicios/', setServicios);
-    fetchData('http://localhost:8000/estados/', setEstados);
+    fetchData('categorias/', setCategorias);
+    fetchData('prioridades/', setPrioridades);
+    fetchData('servicios/', setServicios);
+    fetchData('estados/', setEstados);
   }, [navigate]); // gets the data
 
   useEffect(() => {
@@ -104,10 +105,6 @@ const Tickets = () => {
       }));
     }
   }, [estados]);// Establecer el estado predeterminado como "Abierto" si existe en la lista de estados
-
-
-  
-
   const handleCategoryChange = (e) => {
     const categoriaId = parseInt(e.target.value);
     setFormData((prevData) => ({
@@ -124,7 +121,6 @@ const Tickets = () => {
       servicio: relatedService ? relatedService.id : '',
     }));
   }; // manejo de cambios de categoria
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -139,8 +135,15 @@ const Tickets = () => {
     const adjustedData = {
       ...formData,
     };
-
+    console.log(formData.titulo,
+      formData.comentario,
+      formData.categoria,
+      formData.prioridad,
+      formData.servicio,
+      formData.estado)
+    console.log(adjustedData)
     const token = localStorage.getItem('token');
+    console.log(token)
     if (!token) {
       alert('No estás autenticado. Por favor, inicia sesión.');
       navigate('/login');
@@ -148,16 +151,14 @@ const Tickets = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/tickets/', {
-        method: 'POST',
+      const token = localStorage.getItem('token');
+      const response = await apiClient.post('tickets/', adjustedData, {
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(adjustedData),
       });
 
-      if (response.ok) {
+      if (response) {
         alert('Ticket creado con éxito');
         navigate('/tickets');
         setFormData({
@@ -168,10 +169,6 @@ const Tickets = () => {
           servicio: '',
           estado: estados.find((estado) => estado.nom_estado === 'Abierto')?.id || '', // Restablecer a "Abierto"
         });
-      } else {
-        const errorData = await response.json();
-        console.error('Error en la respuesta:', errorData);
-        alert(`Error al crear el ticket: ${JSON.stringify(errorData)}`);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -195,7 +192,7 @@ const Tickets = () => {
       </div>
 
       {/* Renderiza información general si no hay categoría seleccionada */}
-      {selectedCategoryId === '' ? (
+      {isNaN(selectedCategoryId) ? (
         <p>infro general</p>
       ) : (
         // Renderiza las instrucciones de la guía seleccionada

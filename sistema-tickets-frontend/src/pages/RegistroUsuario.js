@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
 import { decodeToken } from '../utils';
 import Avatar from '../imagenes/Avatar.jpg';
+import apiClient from '../components/apiClient';
 
 const RegistroUsuario = () => {
     const [formData, setFormData] = useState({
@@ -32,7 +32,8 @@ const RegistroUsuario = () => {
 
         const fetchCargos = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/cargos/');
+                const response = await apiClient.get('cargos/');
+                //importante añadir header
                 setCargos(response.data);
             } catch (error) {
                 console.error('Error al obtener los cargos:', error);
@@ -60,7 +61,7 @@ const RegistroUsuario = () => {
         const formDataToSend = isAdmin ? formData : { ...formData, role: 'usuario' };
 
         try {
-            const response = await axios.post('http://127.0.0.1:8000/registrar/', formDataToSend);
+            const response = await apiClient.post('registrar/', formDataToSend);
             console.log('Usuario registrado:', response.data);
             navigate('/login');
         } catch (err) {

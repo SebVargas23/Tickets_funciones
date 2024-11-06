@@ -1,8 +1,8 @@
 // src/pages/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import '../App.css';
+import apiClient from '../components/apiClient';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -25,7 +25,8 @@ const Login = () => {
 
     try {
       // Realizar solicitud POST para autenticación
-      const response = await axios.post('http://127.0.0.1:8000/api/token/', formData);
+      const response = await apiClient.post('api/token/', formData);
+      //añadir header
       
       // Almacenar el token en localStorage
       localStorage.setItem('token', response.data.access);

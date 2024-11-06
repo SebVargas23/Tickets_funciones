@@ -1,8 +1,8 @@
 // src/pages/Dashboard.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import '../App.css';
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import apiClient from '../components/apiClient';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({});
@@ -12,7 +12,9 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/dashboard/stats/');
+                const response = await apiClient.get('api/dashboard/stats/'
+                    //,{headers: {'ngrok-skip-browser-warning': 'any-value' },}
+                );
                 setStats(response.data);
             } catch (err) {
                 setError("Error al cargar estadísticas");

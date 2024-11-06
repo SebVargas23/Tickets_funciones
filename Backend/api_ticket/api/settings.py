@@ -26,8 +26,26 @@ SECRET_KEY = 'django-insecure-%j^l+^6=ulb)ogd9rs4c%fv&q-b(ljaa7g49z=g5peeq#t^6w_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'heron-eminent-starling.ngrok-free.app',
+    'localhost',
+    '127.0.0.1'
+]
 
+# ngrok http --url=heron-eminent-starling.ngrok-free.app 8000
+
+SESSION_COOKIE_SAMESITE = None
+CSRF_COOKIE_SAMESITE = None
+SESSION_COOKIE_SECURE = True  # Esto asegura que las cookies solo se envíen en HTTPS
+CSRF_COOKIE_SECURE = True     # Configuración para HTTPS (necesaria para ngrok)
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://heron-eminent-starling.ngrok-free.app',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    "http://localhost:3000",
+    "http://127.0.0.1:3000", 
+]
 
 # Application definition
 
@@ -56,10 +74,11 @@ AUTHENTICATION_BACKENDS = [
 REST_FRAMEWORK = {
     
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'knox.auth.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        
         
         ),
         
@@ -79,6 +98,12 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'ngrok-skip-browser-warning',  # add this line
+    # other headers you may need
+]
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',

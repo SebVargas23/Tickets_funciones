@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../App.css';
+import apiClient from '../components/apiClient';
 
 const EditTicket = () => {
   const { id } = useParams();
@@ -24,16 +24,16 @@ const EditTicket = () => {
 
       try {
         const [ticketRes, categoriasRes, prioridadesRes, estadosRes] = await Promise.all([
-          axios.get(`http://127.0.0.1:8000/tickets/${id}/`, {
+          apiClient.get(`tickets/${id}/`, {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/categorias/', {
+          apiClient.get('categorias/', {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/prioridades/', {
+          apiClient.get('prioridades/', {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('http://127.0.0.1:8000/estados/', {
+          apiClient.get('estados/', {
             headers: { 'Authorization': `Bearer ${token}` },
           })
         ]);
@@ -70,13 +70,10 @@ const EditTicket = () => {
     };
 
     // Filtrar los campos de solo lectura antes de enviar
-    delete ticketData.user;
-    delete ticketData.fecha_creacion;
 
     try {
-      await axios.patch(`http://127.0.0.1:8000/tickets/${id}/`, ticketData, {
+      await apiClient.patch(`tickets/${id}/`, ticketData, {
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
       });
@@ -102,13 +99,12 @@ const EditTicket = () => {
       fecha_cierre: new Date().toISOString(),
     };
 
-    if (!ticketData.user) delete ticketData.user;
-    if (!ticketData.fecha_creacion) delete ticketData.fecha_creacion;
+    delete ticketData.user;
+    delete ticketData.fecha_creacion;
 
     try {
-      await axios.patch(`http://127.0.0.1:8000/tickets/${id}/`, ticketData, {
+      await apiClient.patch(`tickets/${id}/`, ticketData, {
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
       });
@@ -140,9 +136,8 @@ const EditTicket = () => {
     delete ticketData.fecha_creacion;
 
     try {
-      await axios.patch(`http://127.0.0.1:8000/tickets/${id}/`, ticketData, {
+      await apiClient.patch(`tickets/${id}/`, ticketData, {
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
       });
