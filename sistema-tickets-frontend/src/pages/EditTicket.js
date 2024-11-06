@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../App.css';
+import apiClient from '../components/apiClient';
 
 const EditTicket = () => {
   const { id } = useParams();
@@ -24,17 +24,17 @@ const EditTicket = () => {
 
       try {
         const [ticketRes, categoriasRes, prioridadesRes, estadosRes] = await Promise.all([
-          axios.get(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, {
-            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
+          apiClient.get(`tickets/${id}/`, {
+            headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/categorias/', {
-            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
+          apiClient.get('categorias/', {
+            headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/prioridades/', {
-            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
+          apiClient.get('prioridades/', {
+            headers: { 'Authorization': `Bearer ${token}` },
           }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/estados/', {
-            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
+          apiClient.get('estados/', {
+            headers: { 'Authorization': `Bearer ${token}` },
           })
         ]);
 
@@ -72,9 +72,8 @@ const EditTicket = () => {
     // Filtrar los campos de solo lectura antes de enviar
 
     try {
-      await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
-        headers: {'ngrok-skip-browser-warning': 'any-value' ,
-          'Content-Type': 'application/json',
+      await apiClient.patch(`tickets/${id}/`, ticketData, {
+        headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
@@ -104,9 +103,8 @@ const EditTicket = () => {
     delete ticketData.fecha_creacion;
 
     try {
-      await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
-        headers: {'ngrok-skip-browser-warning': 'any-value' ,
-          'Content-Type': 'application/json',
+      await apiClient.patch(`tickets/${id}/`, ticketData, {
+        headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
@@ -138,9 +136,8 @@ const EditTicket = () => {
     delete ticketData.fecha_creacion;
 
     try {
-      await axios.patch(`https://heron-eminent-starling.ngrok-free.app/tickets/${id}/`, ticketData, {
-        headers: {'ngrok-skip-browser-warning': 'any-value' ,
-          'Content-Type': 'application/json',
+      await apiClient.patch(`tickets/${id}/`, ticketData, {
+        headers: {
           'Authorization': `Bearer ${token}`,
         },
       });

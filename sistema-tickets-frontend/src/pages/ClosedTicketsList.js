@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import '../App.css';
+import apiClient from '../components/apiClient';
 
 const ClosedTicketsList = () => {
   const [closedTickets, setClosedTickets] = useState([]);
@@ -25,17 +25,17 @@ const ClosedTicketsList = () => {
 
       try {
         const [ticketsRes, categoriasRes, prioridadesRes, estadosRes] = await Promise.all([
-          axios.get('https://heron-eminent-starling.ngrok-free.app/tickets/', {
-            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
+          apiClient.get('tickets/', {
+            headers: {'Authorization': `Bearer ${token}` },
           }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/categorias/', {
-            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
+          apiClient.get('categorias/', {
+            headers: {'Authorization': `Bearer ${token}` },
           }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/prioridades/', {
-            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
+          apiClient.get('prioridades/', {
+            headers: {'Authorization': `Bearer ${token}` },
           }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/estados/', {
-            headers: {'ngrok-skip-browser-warning': 'any-value' , 'Authorization': `Bearer ${token}` },
+          apiClient.get('estados/', {
+            headers: {'Authorization': `Bearer ${token}` },
           }),
         ]);
 

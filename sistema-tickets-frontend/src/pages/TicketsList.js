@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
 import { decodeToken } from '../utils'; // Asegúrate de tener decodeToken importado
+import apiClient from '../components/apiClient';
 
 const TicketsList = () => {
   const [tickets, setTickets] = useState([]);
@@ -47,12 +47,12 @@ const TicketsList = () => {
       try {
         const token = localStorage.getItem('token');
         const [ticketsRes, usuariosRes, categoriasRes, prioridadesRes, estadosRes, serviciosRes] = await Promise.all([
-          axios.get('https://heron-eminent-starling.ngrok-free.app/tickets/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/get-user-data/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }), // Obtener usuarios
-          axios.get('https://heron-eminent-starling.ngrok-free.app/categorias/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/prioridades/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/estados/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }),
-          axios.get('https://heron-eminent-starling.ngrok-free.app/servicios/', { headers: {'ngrok-skip-browser-warning': 'any-value' , Authorization: `Bearer ${token}` } }),
+          apiClient.get('tickets/', { headers: { Authorization: `Bearer ${token}` } }),
+          apiClient.get('get-user-data/', { headers: { Authorization: `Bearer ${token}` } }), // Obtener usuarios
+          apiClient.get('categorias/', { headers: { Authorization: `Bearer ${token}` } }),
+          apiClient.get('prioridades/', { headers: { Authorization: `Bearer ${token}` } }),
+          apiClient.get('estados/', { headers: { Authorization: `Bearer ${token}` } }),
+          apiClient.get('servicios/', { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
         console.log(ticketsRes.data);

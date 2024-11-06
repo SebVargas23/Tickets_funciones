@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Modal from 'react-modal'; // Modal para el formulario
 import '../App.css';
 import guias from '../json_test/guias.json';
+import apiClient from '../components/apiClient';
 
 // Configura el estilo del modal
 Modal.setAppElement('#root');
@@ -25,21 +26,21 @@ const Tickets = () => {
   const [estados, setEstados] = useState([]);
   
   const [modalIsOpen, setModalIsOpen] = useState(false); // Estado para el modal
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(NaN);
   const [guiaContenido, setGuiaContenido] = useState(null);
 
   const handleGuiaChange = (e) => {
     const categoriaId = parseInt(e.target.value);
-    console.log(categoriaId)
+    
     setSelectedCategoryId(categoriaId);
-
-    if (categoriaId === '') {
+    if (isNaN(selectedCategoryId)) {
       setGuiaContenido(null); // Si no hay categoría, no hay contenido
     } else {
       // Aquí busca el contenido de la guía basado en el id de la categoría
       const guia = guias.find(guia => guia.id_categoria === Number(categoriaId));
+      console.log(e.target.value)
       setGuiaContenido(guia || null);
-
+      
       const relatedService = servicios.find(
         (servicio) => servicio.categoria_id === categoriaId
       );
@@ -75,24 +76,24 @@ const Tickets = () => {
       }
 
       try {
-        const response = await fetch(url, {
-          headers: {'ngrok-skip-browser-warning': 'any-value' ,
+        const response = await apiClient.get(url, {
+          headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
-        const data = await response.json();
-        setState(data);
-        console.log('data: ', data)
+        console.log(response.data)
+        setState(response.data);
+        console.log('data: ', response.data)
       } catch (error) {
         console.error(`Error al cargar los datos desde ${url}:`, error);
       }
     };
 
     // Cargar todas las listas de datos
-    fetchData('https://heron-eminent-starling.ngrok-free.app/categorias/', setCategorias);
-    fetchData('https://heron-eminent-starling.ngrok-free.app/prioridades/', setPrioridades);
-    fetchData('https://heron-eminent-starling.ngrok-free.app/servicios/', setServicios);
-    fetchData('https://heron-eminent-starling.ngrok-free.app/estados/', setEstados);
+    fetchData('categorias/', setCategorias);
+    fetchData('prioridades/', setPrioridades);
+    fetchData('servicios/', setServicios);
+    fetchData('estados/', setEstados);
   }, [navigate]); // gets the data
 
   useEffect(() => {
@@ -148,10 +149,8 @@ const Tickets = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/tickets/', {
-        method: 'POST',
-        headers: {'ngrok-skip-browser-warning': 'any-value' ,
-          'Content-Type': 'application/json',
+      const response = await apiClient.post('tickets/', {
+        headers: {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(adjustedData),
@@ -195,7 +194,7 @@ const Tickets = () => {
       </div>
 
       {/* Renderiza información general si no hay categoría seleccionada */}
-      {selectedCategoryId === '' ? (
+      {isNaN(selectedCategoryId) ? (
         <p>infro general</p>
       ) : (
         // Renderiza las instrucciones de la guía seleccionada

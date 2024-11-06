@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
-import axios from 'axios';
 import RegistroUsuario from './pages/RegistroUsuario';
 import Login from './pages/Login';
 import Tickets from './pages/Tickets';
@@ -14,16 +13,19 @@ import PrivateRoute from './components/PrivateRoute';
 import { decodeToken } from './utils';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import apiClient from './components/apiClient';
 
 // Configuración de Axios
-axios.interceptors.response.use(
+apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error("Error de Axios:", error.message);
     if (error.response && error.response.status === 401) {
       alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
       localStorage.removeItem('token');
       window.location.href = '/login';
     }
+
     return Promise.reject(error);
   }
 );

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
 import { decodeToken } from '../utils';
 import Avatar from '../imagenes/Avatar.jpg';
+import apiClient from '../components/apiClient';
 
 const RegistroUsuario = () => {
     const [formData, setFormData] = useState({
@@ -32,9 +32,7 @@ const RegistroUsuario = () => {
 
         const fetchCargos = async () => {
             try {
-                const response = await axios.get('https://heron-eminent-starling.ngrok-free.app/cargos/', {
-                    headers: {'ngrok-skip-browser-warning': 'any-value' },
-                  });
+                const response = await apiClient.get('cargos/');
                 //importante añadir header
                 setCargos(response.data);
             } catch (error) {
@@ -63,7 +61,7 @@ const RegistroUsuario = () => {
         const formDataToSend = isAdmin ? formData : { ...formData, role: 'usuario' };
 
         try {
-            const response = await axios.post('https://heron-eminent-starling.ngrok-free.app/registrar/', formDataToSend);
+            const response = await apiClient.post('registrar/', formDataToSend);
             console.log('Usuario registrado:', response.data);
             navigate('/login');
         } catch (err) {

@@ -29,7 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'heron-eminent-starling.ngrok-free.app',
     'localhost',
-    '127.0.0.1:8000'
+    '127.0.0.1'
 ]
 
 # ngrok http --url=heron-eminent-starling.ngrok-free.app 8000
