@@ -105,10 +105,6 @@ const Tickets = () => {
       }));
     }
   }, [estados]);// Establecer el estado predeterminado como "Abierto" si existe en la lista de estados
-
-
-  
-
   const handleCategoryChange = (e) => {
     const categoriaId = parseInt(e.target.value);
     setFormData((prevData) => ({
@@ -125,7 +121,6 @@ const Tickets = () => {
       servicio: relatedService ? relatedService.id : '',
     }));
   }; // manejo de cambios de categoria
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -140,8 +135,15 @@ const Tickets = () => {
     const adjustedData = {
       ...formData,
     };
-
+    console.log(formData.titulo,
+      formData.comentario,
+      formData.categoria,
+      formData.prioridad,
+      formData.servicio,
+      formData.estado)
+    console.log(adjustedData)
     const token = localStorage.getItem('token');
+    console.log(token)
     if (!token) {
       alert('No estás autenticado. Por favor, inicia sesión.');
       navigate('/login');
@@ -149,14 +151,14 @@ const Tickets = () => {
     }
 
     try {
-      const response = await apiClient.post('tickets/', {
+      const token = localStorage.getItem('token');
+      const response = await apiClient.post('tickets/', adjustedData, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(adjustedData),
       });
 
-      if (response.ok) {
+      if (response) {
         alert('Ticket creado con éxito');
         navigate('/tickets');
         setFormData({
@@ -167,10 +169,6 @@ const Tickets = () => {
           servicio: '',
           estado: estados.find((estado) => estado.nom_estado === 'Abierto')?.id || '', // Restablecer a "Abierto"
         });
-      } else {
-        const errorData = await response.json();
-        console.error('Error en la respuesta:', errorData);
-        alert(`Error al crear el ticket: ${JSON.stringify(errorData)}`);
       }
     } catch (error) {
       console.error('Error:', error);
