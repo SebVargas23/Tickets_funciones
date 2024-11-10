@@ -10,10 +10,12 @@ from .serializers import (
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
+
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from .models import Usuario, Ticket
 from django.db.models import Count
+from apps.tickets.tasks import update_sla_status
 
 
 # Departamento Views
@@ -79,7 +81,7 @@ class TicketListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         print(f"Authenticated user: {user}, role: {user.role}")
-
+        update_sla_status()
         # Return all tickets for admin, else only tickets created by the user
         if user.role == 'admin':
             print("User is admin, returning all tickets.")
@@ -101,7 +103,11 @@ class TicketListCreateView(generics.ListCreateAPIView):
             raise ValueError("El usuario autenticado no es una instancia de Usuario.")
 
         # Create 'Creacion' date in FechaTicket
-        FechaTicket.objects.create(ticket=serializer.instance, tipo_fecha='Creacion')
+        FechaTicket.objects.create(
+            ticket=serializer.instance,
+            tipo_fecha='Creacion',
+            fecha= timezone.now()
+            )
         print("FechaTicket entry created for ticket creation date.")
 
 
@@ -152,6 +158,9 @@ class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
         if request.data.get('fecha_creacion') == '':
             print("Removing empty 'fecha_creacion' from request data")
             del request.data['fecha_creacion']
+        if request.data.get('fecha_cierre_esperado') == '':
+            print("Removing empty 'fecha_cierre_esperado' from request data")
+            del request.data['fecha_cierre_esperado']
         if request.data.get('fecha_cierre') == '':
             print("Removing empty 'fecha_cierre' from request data")
             del request.data['fecha_cierre']

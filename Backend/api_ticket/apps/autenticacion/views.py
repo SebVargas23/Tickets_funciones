@@ -44,10 +44,6 @@ class RegistroView(generics.CreateAPIView):
         else:
             serializer.save()
 
-class CargoListAPIView(generics.ListAPIView):
-    queryset = Cargo.objects.all()
-    serializer_class = CargoSerializer
-    permission_classes = (permissions.AllowAny,)
 
 class UsuarioListAPIView(generics.ListAPIView):
     User = get_user_model()

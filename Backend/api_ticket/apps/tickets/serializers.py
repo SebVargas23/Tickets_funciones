@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import *
 from apps.autenticacion.models import Cargo, Departamento
 from django.utils.timezone import localtime
+from .tasks import update_sla_status
 
 
 class DepartamentoSerializer(serializers.ModelSerializer):
@@ -35,6 +36,7 @@ class ServicioSerializer(serializers.ModelSerializer):
 
 class TicketSerializer(serializers.ModelSerializer):
     fecha_creacion = serializers.SerializerMethodField()
+    fecha_cierre_esperado = serializers.SerializerMethodField()
     fecha_cierre = serializers.SerializerMethodField()
     user = serializers.SlugRelatedField(
         slug_field='nom_usuario',
@@ -47,11 +49,16 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'titulo', 'comentario', 'categoria',
             'prioridad', 'servicio', 'estado', 'user',
-            'fecha_creacion', 'fecha_cierre'
+            'fecha_creacion','fecha_cierre_esperado', 'fecha_cierre','sla_status'
         ]
 
     def get_fecha_creacion(self, obj):
         fecha_creacion = FechaTicket.objects.filter(ticket=obj, tipo_fecha='Creacion').first()
+        if fecha_creacion:
+            return localtime(fecha_creacion.fecha).strftime('%Y-%m-%d %H:%M:%S')  # Formato ajustado
+        return None
+    def get_fecha_cierre_esperado(self, obj):
+        fecha_creacion = FechaTicket.objects.filter(ticket=obj, tipo_fecha='cierre_esperado').first()
         if fecha_creacion:
             return localtime(fecha_creacion.fecha).strftime('%Y-%m-%d %H:%M:%S')  # Formato ajustado
         return None
@@ -74,7 +81,7 @@ class TicketSerializer(serializers.ModelSerializer):
         instance.servicio = validated_data.get('servicio', instance.servicio)
         instance.estado = validated_data.get('estado', instance.estado)
         instance.save()
-
+        
         # Manejar la fecha de cierre
         fecha_cierre = validated_data.get('fecha_cierre', None)
         if fecha_cierre:
@@ -83,7 +90,7 @@ class TicketSerializer(serializers.ModelSerializer):
                 tipo_fecha='Cierre',
                 defaults={'fecha': fecha_cierre}
             )
-
+        update_sla_status(ticket_id=instance.id)
         return instance
     
 class DetalleUsuarioTicketSerializer(serializers.ModelSerializer):
