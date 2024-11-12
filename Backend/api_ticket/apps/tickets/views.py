@@ -1,5 +1,5 @@
 from rest_framework import generics,status
-from .models import Categoria, Estado, Prioridad, Servicio, Ticket, DetalleUsuarioTicket, FechaTicket,Usuario
+from .models import Categoria, Estado, Prioridad, Servicio, Ticket, DetalleUsuarioTicket, FechaTicket,Usuario, Costo, PresupuestoTI
 from apps.autenticacion.models import Departamento, Cargo
 from apps.autenticacion.serializers import UsuarioSerializer
 from .serializers import (
@@ -15,7 +15,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from .models import Usuario, Ticket
 from django.db.models import Count
-from apps.tickets.tasks import update_sla_status
+from apps.tickets.tasks import update_sla_status, definir_costo
+from api.logger import logger
 
 
 # Departamento Views
@@ -80,36 +81,43 @@ class TicketListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        print(f"Authenticated user: {user}, role: {user.role}")
+        logger.info(f"on:get_queryset. Authenticated user: {user}, role: {user.role}")
+        definir_costo()
         update_sla_status()
         # Return all tickets for admin, else only tickets created by the user
         if user.role == 'admin':
-            print("User is admin, returning all tickets.")
+            logger.info("on:get_queryset. User is admin, returning all tickets.")
             return Ticket.objects.all()
         
-        print("User is not admin, returning tickets created by this user.")
+        logger.info("on:get_queryset. User is not admin, returning tickets created by this user.")
         return Ticket.objects.filter(user=user)
 
     def perform_create(self, serializer):
         # Retrieve authenticated user
         usuario_autenticado = self.request.user
-        print(f"Authenticated user for creation: {usuario_autenticado}")
+        logger.info(f"on: perform_create. Authenticated user for ticket creation: {usuario_autenticado}")
 
         # Ensure user is instance of custom Usuario model
         if isinstance(usuario_autenticado, Usuario):
             serializer.save(user=usuario_autenticado)
-            print("Ticket created successfully with user:", usuario_autenticado.nom_usuario)
+            logger.info(f"on: perform_create.isinstance. Ticket created successfully for user: {usuario_autenticado.nom_usuario}")
         else:
-            raise ValueError("El usuario autenticado no es una instancia de Usuario.")
-
+            logger.error("on: perform_create.isinstance. Authenticated user is not an instance of Usuario.")
+            raise ValueError("on: perform_create.isinstance. El usuario autenticado no es una instancia de Usuario.")
+        ticket = serializer.instance
         # Create 'Creacion' date in FechaTicket
         FechaTicket.objects.create(
-            ticket=serializer.instance,
+            ticket=ticket,
             tipo_fecha='Creacion',
             fecha= timezone.now()
             )
-        print("FechaTicket entry created for ticket creation date.")
+        logger.info("on: perform_create. FechaTicket entry created for ticket creation date.")
+        # Access the 'servicio' related field from the ticket
+        definir_costo(ticket_id=ticket.id)
+        update_sla_status(ticket_id=ticket.id)
 
+        
+        
 
 class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
@@ -117,7 +125,8 @@ class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         ticket = self.get_object()
-        print("Retrieving ticket:", ticket.id)
+        logger.info(f"Retrieving ticket: {ticket.id}")
+
 
         # Serialize ticket data
         ticket_data = self.get_serializer(ticket).data
@@ -126,23 +135,23 @@ class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
         fecha_creacion = FechaTicket.objects.filter(ticket=ticket, tipo_fecha='Creacion').order_by('-fecha').first()
         if fecha_creacion:
             ticket_data['fecha_creacion'] = fecha_creacion.fecha
-            print("Fecha de creación encontrada:", fecha_creacion.fecha)
+            logger.info(f"Fecha de creación found: {fecha_creacion.fecha}")
         else:
-            print("No se encontró fecha de creación.")
+            logger.warning("No creation date found for the ticket.")
 
         return Response(ticket_data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        print(f"Updating ticket ID: {instance.id}")
+        logger.info(f"Updating ticket ID: {instance.id}")
 
         # Handle state update
         estado_id = request.data.get('estado')
         if estado_id:
             estado_obj = get_object_or_404(Estado, id=estado_id)
             request.data['estado'] = estado_obj.id
-            print("Estado updated to:", estado_obj.nom_estado)
+            logger.info(f"Estado updated to: {estado_obj.nom_estado}")
 
         # Handle user update
         user_id = request.data.get('user')
@@ -150,32 +159,32 @@ class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
             try:
                 user = Usuario.objects.get(nom_usuario=user_id)
                 request.data['user'] = user
-                print("Usuario updated to:", user.nom_usuario)
+                logger.info(f"Usuario updated to: {user.nom_usuario}")
             except Usuario.DoesNotExist:
+                logger.error(f"User with ID {user_id} not found.")
                 raise ValidationError({"user": "Usuario no encontrado"})
         
         # Remove empty dates if present
         if request.data.get('fecha_creacion') == '':
-            print("Removing empty 'fecha_creacion' from request data")
+            logger.info("Removing empty 'fecha_creacion' from request data.")
             del request.data['fecha_creacion']
         if request.data.get('fecha_cierre_esperado') == '':
-            print("Removing empty 'fecha_cierre_esperado' from request data")
+            logger.info("Removing empty 'fecha_cierre_esperado' from request data.")
             del request.data['fecha_cierre_esperado']
         if request.data.get('fecha_cierre') == '':
-            print("Removing empty 'fecha_cierre' from request data")
+            logger.info("Removing empty 'fecha_cierre' from request data.")
             del request.data['fecha_cierre']
 
         # Serializar y actualizar el ticket
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
 
         if not serializer.is_valid():
-            # Print serializer errors if validation fails
-            print("Serializer Validation Errors:", serializer.errors)
+            logger.error(f"Serializer validation errors: {serializer.errors}")
         else:
-            print("Validated Data:", serializer.validated_data)
+            logger.info(f"Validated data: {serializer.validated_data}")
         self.perform_update(serializer)
-        print("Ticket updated successfully:", instance)
-
+        logger.info(f"Ticket ID {instance.id} updated successfully.")
+        definir_costo(ticket_id=instance.id)
         # Si el estado cambia a "Cerrado", crea o actualiza la fecha de cierre
         if estado_obj.nom_estado == "Cerrado":
             fecha_cierre, created = FechaTicket.objects.get_or_create(
@@ -183,11 +192,11 @@ class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
                 defaults={'fecha': timezone.now()}
             )
             if created:
-                print("FechaTicket entry for cierre created:", fecha_cierre.fecha)
+                logger.info(f"FechaTicket entry for cierre created: {fecha_cierre.fecha}")
             else:
                 fecha_cierre.fecha = timezone.now()
                 fecha_cierre.save()
-                print("FechaTicket entry for cierre updated to:", fecha_cierre.fecha)
+                logger.info(f"FechaTicket entry for cierre updated to: {fecha_cierre.fecha}")
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     

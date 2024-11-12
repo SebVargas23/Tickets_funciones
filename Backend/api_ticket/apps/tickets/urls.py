@@ -66,11 +66,6 @@ urlpatterns = [
     path('fechas-tickets/', FechaTicketListCreateView.as_view(), name='fecha-ticket-list-create'),
     path('fechas-tickets/<int:pk>/', FechaTicketDetailView.as_view(), name='fecha-ticket-detail'),
 
-    # Ruta para obtener el token
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    # Ruta para refrescar el token
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
     # Otras rutas de tu API
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),

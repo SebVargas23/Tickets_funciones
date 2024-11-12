@@ -3,7 +3,7 @@ from .models import *
 from apps.autenticacion.models import Cargo, Departamento
 from django.utils.timezone import localtime
 from .tasks import update_sla_status
-
+from api.logger import logger
 
 class DepartamentoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,22 +13,18 @@ class CargoSerializer(serializers.ModelSerializer):
     class Meta:
         model=Cargo
         fields=['id','nom_cargo','departamento']
-    
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model= Categoria
         fields = ['id','nom_categoria']
-
 class EstadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Estado
         fields = ['id','nom_estado']
-
 class PrioridadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prioridad
         fields = ['id','num_prioridad']
-
 class ServicioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Servicio
@@ -55,25 +51,38 @@ class TicketSerializer(serializers.ModelSerializer):
     def get_fecha_creacion(self, obj):
         fecha_creacion = FechaTicket.objects.filter(ticket=obj, tipo_fecha='Creacion').first()
         if fecha_creacion:
+            logger.debug(f"on: get_fecha_creacion. Fetching fecha_creacion for ticket {obj.id}: {fecha_creacion.fecha}")
             return localtime(fecha_creacion.fecha).strftime('%Y-%m-%d %H:%M:%S')  # Formato ajustado
+        logger.warning(f"on: get_fecha_creacion. Fecha de creación not found for ticket {obj.id}")
         return None
     def get_fecha_cierre_esperado(self, obj):
         fecha_creacion = FechaTicket.objects.filter(ticket=obj, tipo_fecha='cierre_esperado').first()
         if fecha_creacion:
+            logger.debug(f"on: get_fecha_cierre_esperado. Fetching fecha_cierre_esperado for ticket {obj.id}: {fecha_creacion.fecha}")
             return localtime(fecha_creacion.fecha).strftime('%Y-%m-%d %H:%M:%S')  # Formato ajustado
+        logger.warning(f"on: get_fecha_cierre_esperado. Fecha de cierre esperado not found for ticket {obj.id}")
         return None
     def get_fecha_cierre(self, obj):
         # Obtener la fecha de cierre del modelo FechaTicket
         fecha_cierre = FechaTicket.objects.filter(ticket=obj, tipo_fecha='Cierre').first()
         if fecha_cierre:
+            logger.debug(f"on: get_fecha_cierre. Fetching fecha_cierre for ticket {obj.id}: {fecha_cierre.fecha}")
             return localtime(fecha_cierre.fecha).strftime('%Y-%m-%d %H:%M:%S')
+        logger.warning(f"on: get_fecha_cierre. Fecha de cierre not found for ticket {obj.id}")
         return None
 
     def get_user(self, obj):
-        return obj.user.nom_usuario if obj.user else None  # Ajusta 'nom_usuario' al campo correcto en tu modelo de usuario
+        nom_user= obj.user.nom_usuario if obj.user else None
+        if nom_user:
+            logger.debug(f"on: get_userUser.  for ticket {obj.id}: {nom_user}")
+        else:
+            logger.warning(f"on: get_userUser. User not assigned for ticket {obj.id}")
+        return nom_user # Ajusta 'nom_usuario' al campo correcto en tu modelo de usuario
+        
 
     def update(self, instance, validated_data):
         # Actualizar el ticket con datos validados
+        logger.debug(f"on:Ticket update. Updating ticket {instance.id}: {validated_data}")
         instance.titulo = validated_data.get('titulo', instance.titulo)
         instance.comentario = validated_data.get('comentario', instance.comentario)
         instance.categoria = validated_data.get('categoria', instance.categoria)
@@ -81,28 +90,35 @@ class TicketSerializer(serializers.ModelSerializer):
         instance.servicio = validated_data.get('servicio', instance.servicio)
         instance.estado = validated_data.get('estado', instance.estado)
         instance.save()
-        
+        logger.info(f"on:Ticket update. Ticket {instance.id} updated successfully.")
         # Manejar la fecha de cierre
         fecha_cierre = validated_data.get('fecha_cierre', None)
         if fecha_cierre:
+            logger.debug(f"on:Ticket update. Setting cierre fecha for ticket {instance.id}: {fecha_cierre}")
             FechaTicket.objects.update_or_create(
                 ticket=instance,
                 tipo_fecha='Cierre',
                 defaults={'fecha': fecha_cierre}
             )
+        else:
+            logger.info(f"on:Ticket update. No fecha_cierre provided for ticket {instance.id}.")
         update_sla_status(ticket_id=instance.id)
+        logger.info(f"on:Ticket update. SLA status for ticket {instance.id} updated.")
         return instance
     
 class DetalleUsuarioTicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = DetalleUsuarioTicket
         fields = ['ticket','usuario','relacion_ticket']
-
-'''class DetalleServicioSerializer(serializers.ModelSerializer):
-    model = DetalleServicio
-    fields = ['id','ticket','servicio']''' 
-
 class FechaTicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = FechaTicket
         fields = ['id','fecha','tipo_fecha']
+class PresupuestoTISerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PresupuestoTI
+        fields = ['id', 'presupuesto_mensual', 'presupuesto_gastado', 'mes']
+class CostoSerializer(serializers.ModelSerializer):    
+    class Meta:
+        model = Costo
+        fields = ['id', 'ticket', 'presupuesto_ti', 'monto', 'calculo_monto', 'monto_final', 'fecha']
