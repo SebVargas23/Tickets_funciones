@@ -10,6 +10,7 @@ from .views import (
     TicketListCreateView, TicketDetailView,
     DetalleUsuarioTicketListCreateView, DetalleUsuarioTicketDetailView,
     FechaTicketListCreateView, FechaTicketDetailView,ClosedTicketListView,
+    sla_presupuestoView,
     dashboard_stats,list_usuarios
 )
 
@@ -67,12 +68,12 @@ urlpatterns = [
     path('fechas-tickets/<int:pk>/', FechaTicketDetailView.as_view(), name='fecha-ticket-detail'),
 
     # Otras rutas de tu API
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     path('tickets-cerrados/', ClosedTicketListView.as_view(), name='tickets-cerrados'),
 
     path('api/dashboard/stats/', dashboard_stats, name='dashboard-stats'),
+
+    path('sla-presupuestos/',sla_presupuestoView.as_view(), name='sla-presupuesto'),
 
     path('usuarios/', list_usuarios, name='list_usuarios'),
 ]

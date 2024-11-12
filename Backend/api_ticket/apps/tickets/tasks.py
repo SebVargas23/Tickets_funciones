@@ -8,91 +8,112 @@ from django.db.models import Sum
 import math
 from django.db import transaction
 from api.logger import logger
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 
 def update_sla_status(ticket_id=None):
     """
-    Updates the SLA status for a specific ticket or all tickets if no ticket_id is provided.
+    Updates the SLA status for a specific ticket or all tickets.
+    It will call the appropriate function for open and closed tickets.
     """
     try:
-        now = timezone.now()
-        logger.info(f"on: update_sla_status. Starting SLA update process at {now}")
-        # Fetch tickets to update (prefetch related FechaTicket entries to optimize database queries)
+        # Fetch the tickets to update (filter by ticket_id if provided)
         if ticket_id:
             tickets = Ticket.objects.filter(id=ticket_id).prefetch_related('fechaticket_set')
         else:
             tickets = Ticket.objects.all().prefetch_related('fechaticket_set')
 
-        # Process each ticket to update SLA status
         for ticket in tickets:
-            try:
-                # Get the expected closure date (cierre_esperado)
-                fecha_esperada = ticket.fechaticket_set.filter(tipo_fecha='cierre_esperado').first()
-                if not fecha_esperada:
-                    logger.warning(f"on: update_sla_status. Expected closure date not found for Ticket ID {ticket.id}. Skipping SLA update.")
-                    continue
-                
-                cierre_esperado = fecha_esperada.fecha
-                cierre_real = ticket.fechaticket_set.filter(tipo_fecha='Cierre').first()
-                
-                # Determine SLA status based on closure dates
-                if cierre_real:
-                    logger.info(f"on: update_sla_status. Ticket {ticket.id} is closed.")
-                    # Ticket is closed
-                    if cierre_real.fecha <= cierre_esperado:
-                        new_sla_status = 'On Track'
-                        calc_monto = 1.00  # No penalty if on track
-                    else:
-                        new_sla_status = 'Breached'
-                        # Calculate breach penalty (e.g., 5% per hour over the expected closure date)
-                        breach_duration = math.floor((cierre_real.fecha - cierre_esperado).total_seconds() / 3600)  # Duration in hours
-                        calc_monto = max(1.00, 1.00 + 0.05 * breach_duration)
-                        calc_monto_D = Decimal(str(calc_monto)) # Example: 5% penalty per hour
-                    # Update the calc_monto in Costo model
-                    costo = Costo.objects.filter(ticket_id=ticket.id).first()
-                    if costo:
-                        # Check if there are any changes to the calc_monto or monto_final
-                        if costo.calculo_monto != calc_monto or costo.monto_final != costo.monto * calc_monto_D:
-                            # Update the calc_monto and monto_final only if there is a change
-                            costo.calculo_monto = calc_monto
-                            costo.monto_final = costo.monto * calc_monto_D
-                            costo.save()  # Save only if there's a change
-                            calcular_presupuesto_gastado(date=costo.fecha)  # Recalculate budget if necessary
-                            logger.info(f"on: update_sla_status. Updated calc_monto for Ticket ID {ticket.id} to {calc_monto_D}")
-                        else:
-                            logger.info(f"on: update_sla_status. No changes in calc_monto for Ticket ID {ticket.id}, skipping update.")
-                    else:
-                        logger.warning(f"on: update_sla_status. No Costo found for Ticket ID {ticket.id}, skipping cost update.")
+            # Check if the ticket has a cierre_real date (closed ticket)
+            cierre_real = ticket.fechaticket_set.filter(tipo_fecha='Cierre').first()
 
+            if cierre_real:
+                # Closed ticket, update SLA status and cost (calculo_monto)
+                update_sla_status_for_closed_ticket(ticket, cierre_real)
+            else:
+                # Open ticket, just update the SLA status without calculating monto
+                update_sla_status_for_open_ticket(ticket)
 
-                else:
-                    # Ticket is still open
-                    if now > cierre_esperado:
-                        new_sla_status = 'Breached'
-                    elif now + timedelta(days=1) > cierre_esperado:
-                        new_sla_status = 'At Risk'
-                    else:
-                        new_sla_status = 'On Track'
-
-                # Save updated SLA status if changed
-                if ticket.sla_status != new_sla_status:
-                    ticket.sla_status = new_sla_status
-                    ticket.save()
-                    logger.info(f"on: update_sla_status. SLA status updated for Ticket ID {ticket.id}: {new_sla_status}")
-                else:
-                    logger.info(f"on: update_sla_status. SLA status presents no changes for Ticket ID {ticket.id}: {ticket.sla_status}")
-
-            except Exception as e:
-                logger.error(f"on: update_sla_status. Error processing Ticket ID {ticket.id}: {str(e)}")
-
-        if ticket_id:
-            logger.debug(f"on: update_sla_status.SLA status checked and updated (if needed) for Ticket ID {ticket_id}")
-            return 
-        logger.debug(f"on: update_sla_status. SLA status checked and updated (if needed) for {tickets.count()} tickets")
-        return
     except Exception as e:
-        logger.error(f"on: update_sla_status. Error processing tickets: {str(e)}")
+        logger.error(f"Error updating SLA status: {str(e)}")
 
+def update_sla_status_for_open_ticket(ticket):
+    """
+    Updates SLA status for open tickets only (no cost calculations).
+    """
+    now = timezone.now()
+    fecha_esperada = ticket.fechaticket_set.filter(tipo_fecha='cierre_esperado').first()
+    
+    if not fecha_esperada:
+        logger.warning(f"Expected closure date not found for open Ticket ID {ticket.id}. Skipping update.")
+        return
+
+    cierre_esperado = fecha_esperada.fecha
+    if now > cierre_esperado:
+        logger.info(f"ticket {ticket.id} has breached sla")
+        new_sla_status = 'Breached'
+        breach_duration = math.floor((now -cierre_esperado).total_seconds() / 3600)
+        logger.info(f"breach duration of {breach_duration} hours")
+        calc_monto = max(1.00, 1.00 + 0.05 * breach_duration)
+        logger.info(f"calculo monto = {calc_monto}")
+    elif now + timedelta(days=1) > cierre_esperado:
+        logger.info(f"ticket {ticket.id} is at risk")
+        new_sla_status = 'At Risk'
+        calc_monto =1.00
+        logger.info(f"calculo monto = {calc_monto}")
+    elif now > cierre_esperado:
+        logger.info(f"tikcet {ticket.id} is on track")
+        new_sla_status = 'On Track'
+        calc_monto = 1.00
+        logger.info(f"calculo monto = {calc_monto}")
+    calc_monto_D = Decimal(str(calc_monto)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    costo = Costo.objects.filter(ticket_id=ticket.id).first()
+    if costo:
+        if costo.calculo_monto != calc_monto_D:
+            costo.calculo_monto = calc_monto_D
+            costo.monto_final = 0   # Set monto to 0 for open tickets
+            costo.save()
+            logger.info(f"SLA status updated for open Ticket ID {ticket.id}, calculo_monto set to {calc_monto}, monto set to 0")
+        else:
+            logger.info(f"skiped update of costo from open ticket id {ticket.id} because there was no change in calculo_monto{calc_monto_D}, and {costo.calculo_monto}")
+    # Update SLA status if it has changed
+    if ticket.sla_status != new_sla_status:
+        ticket.sla_status = new_sla_status
+        ticket.save()
+        logger.info(f"SLA status updated for open Ticket ID {ticket.id} to {new_sla_status}")
+
+def update_sla_status_for_closed_ticket(ticket, cierre_real):
+    """
+    Updates SLA status and calculo_monto for closed tickets.
+    """
+    fecha_esperada = ticket.fechaticket_set.filter(tipo_fecha='cierre_esperado').first()
+    
+    if not fecha_esperada:
+        logger.warning(f"Expected closure date not found for closed Ticket ID {ticket.id}. Skipping update.")
+        return
+
+    cierre_esperado = fecha_esperada.fecha
+    if cierre_real.fecha <= cierre_esperado:
+        new_sla_status = 'On Track'
+        calc_monto = 1.00
+    else:
+        new_sla_status = 'Breached'
+        breach_duration = math.floor((cierre_real.fecha - cierre_esperado).total_seconds() / 3600)
+        calc_monto = max(1.00, 1.00 + 0.05 * breach_duration)
+    calc_monto_D = Decimal(str(calc_monto))
+    
+    # Update Costo model with new calc_monto if needed
+    costo = Costo.objects.filter(ticket_id=ticket.id).first()
+    if costo and (costo.calculo_monto != calc_monto_D):
+        costo.calculo_monto = calc_monto_D
+        costo.monto_final = costo.monto * calc_monto_D
+        costo.save()
+        logger.info(f"Updated calc_monto for closed Ticket ID {ticket.id} to {calc_monto_D}")
+    
+    # Update SLA status if it has changed
+    if ticket.sla_status != new_sla_status:
+        ticket.sla_status = new_sla_status
+        ticket.save()
+        logger.info(f"SLA status updated for closed Ticket ID {ticket.id} to {new_sla_status}")
 
 @transaction.atomic
 def definir_costo(ticket_id=None):

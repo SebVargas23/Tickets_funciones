@@ -167,7 +167,12 @@ class Costo(models.Model):
     calculo_monto = models.DecimalField(max_digits=10, decimal_places=2, default=1, null=True,blank=True)
     monto_final = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True,blank=True)
     fecha = models.DateField(null=True, blank=True)
-
+    class Meta:
+        unique_together = ('ticket', 'presupuesto_ti')  # Ensures 1 Costo per Ticket + PresupuestoTI
+        # Or alternatively using constraints if using Django 2.2+
+        constraints = [
+            models.UniqueConstraint(fields=['ticket', 'presupuesto_ti'], name='unique_costo_ticket_presupuesto')
+        ]
     def __str__(self):
         return f"Ticket ID {self.ticket.id} -Starting cost: {self.monto} - Final Cost: {self.monto_final}"
     #definir save or update

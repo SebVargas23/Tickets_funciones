@@ -117,7 +117,7 @@ class FechaTicketSerializer(serializers.ModelSerializer):
 class PresupuestoTISerializer(serializers.ModelSerializer):
     class Meta:
         model = PresupuestoTI
-        fields = ['id', 'presupuesto_mensual', 'presupuesto_gastado', 'mes']
+        fields = ['id', 'presupuesto_mensual', 'presupuesto_gastado', 'fecha_presupuesto','over_budget','presupuesto_restante']
 class CostoSerializer(serializers.ModelSerializer):    
     class Meta:
         model = Costo

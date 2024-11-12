@@ -1,10 +1,11 @@
+from datetime import datetime
 from rest_framework import generics,status
 from .models import Categoria, Estado, Prioridad, Servicio, Ticket, DetalleUsuarioTicket, FechaTicket,Usuario, Costo, PresupuestoTI
 from apps.autenticacion.models import Departamento, Cargo
 from apps.autenticacion.serializers import UsuarioSerializer
 from .serializers import (
     DepartamentoSerializer, CargoSerializer, CategoriaSerializer, 
-    EstadoSerializer, PrioridadSerializer, ServicioSerializer, 
+    EstadoSerializer, PresupuestoTISerializer, PrioridadSerializer, ServicioSerializer, 
     TicketSerializer, DetalleUsuarioTicketSerializer, FechaTicketSerializer,
 )
 from rest_framework.response import Response
@@ -15,7 +16,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from .models import Usuario, Ticket
 from django.db.models import Count
-from apps.tickets.tasks import update_sla_status, definir_costo
+from apps.tickets.tasks import calcular_presupuesto_gastado, update_sla_status, definir_costo
 from api.logger import logger
 
 
@@ -115,6 +116,7 @@ class TicketListCreateView(generics.ListCreateAPIView):
         # Access the 'servicio' related field from the ticket
         definir_costo(ticket_id=ticket.id)
         update_sla_status(ticket_id=ticket.id)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
         
         
@@ -223,6 +225,76 @@ class ClosedTicketListView(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAuthenticated]
 
+class sla_presupuestoView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request=None):
+        # Get the month and year from query parameters or default to the current month and year
+        update_sla_status()
+        fecha_request_str = request.query_params.get("date")  # Expecting a date in "YYYY-MM-DD" format
+
+        if fecha_request_str:
+            # Step 2: Try to parse the provided date if it exists
+            try:
+                # Convert the date string to a date object
+                fecha_request = datetime.strptime(fecha_request_str, "%Y-%m-%d").date()
+            except ValueError:
+                return Response({"error": "Invalid date format. Please provide the date in 'YYYY-MM-DD' format."}, status=400)
+        else:
+            # Default to the current date if 'date' is not provided
+            fecha_request = timezone.now().date()  # Get the current date (ignoring the time part)
+        
+        # Step 3: Extract month and year from the date
+        month = fecha_request.month
+        year = fecha_request.year
+        
+        # Step 1: Retrieve `PresupuestoTI` for the specified month and year
+        try:
+            presupuesto_ti = PresupuestoTI.objects.get(
+                fecha_presupuesto__year=year,
+                fecha_presupuesto__month=month
+            )
+            presupuesto_data = PresupuestoTISerializer(presupuesto_ti).data
+        except PresupuestoTI.DoesNotExist:
+            return Response({"error": f"No budget information found for {month}/{year}."}, status=404)
+        calcular_presupuesto_gastado(fecha_request)
+        
+        costos_filtered = Costo.objects.filter(
+            fecha__year=year,
+            fecha__month=month,
+            monto_final__lte=0  # Only open tickets
+        ).select_related('ticket').order_by('-calculo_monto')[:5]
+        worst_tickets_data = []
+        if not costos_filtered:
+            worst_tickets_data = [{"message": "No open tickets found for the selected period."}]
+        else:
+            for costo in costos_filtered:
+                ticket = costo.ticket
+                # Collecting ticket data including title, sla_status, and cost
+                ticket_data = {
+                    "ticket_id": ticket.id,
+                    "title": ticket.titulo,
+                    "sla_status": ticket.sla_status,
+                    "calculo_monto": costo.calculo_monto,
+                    "monto":costo.monto,
+                    "monto_final": costo.monto_final,
+                    "dates": [
+                        {
+                            "date": fecha.fecha,
+                            "type": fecha.tipo_fecha
+                        } for fecha in ticket.fechaticket_set.all()
+                    ]
+                }
+                worst_tickets_data.append(ticket_data)
+
+        response_data = {
+            "presupuesto": presupuesto_data,
+            "worst_tickets": worst_tickets_data
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+    
 
 @api_view(['GET'])
 def dashboard_stats(request):
