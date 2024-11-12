@@ -76,7 +76,7 @@ const SlaRelatedData = () => {
               <th>Status SLA</th>
               <th>Costo de Ticket original</th>
               <th>fecha de Cierre Esperado</th>
-              <th>Horas de atrazo</th>
+              <th>Horas de atraso</th>
               <th>Costo Estimado Del ticket</th>
             </tr>
           </thead>
