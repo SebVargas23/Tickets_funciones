@@ -7992,3 +7992,157 @@
 2024-11-12 13:31:12,199 - api.logger - DEBUG - on: get_fecha_creacion. Fetching fecha_creacion for ticket 29: 2024-11-12 15:46:58.605988+00:00
 2024-11-12 13:31:12,201 - api.logger - DEBUG - on: get_fecha_cierre_esperado. Fetching fecha_cierre_esperado for ticket 29: 2024-11-14 15:46:58.605988+00:00
 2024-11-12 13:31:12,203 - api.logger - WARNING - on: get_fecha_cierre. Fecha de cierre not found for ticket 29
+2024-11-12 13:36:29,461 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 3. Skipping update.
+2024-11-12 13:36:29,465 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 4. Skipping update.
+2024-11-12 13:36:29,468 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 5. Skipping update.
+2024-11-12 13:36:29,472 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 6. Skipping update.
+2024-11-12 13:36:29,489 - api.logger - INFO - ticket 11 has breached sla
+2024-11-12 13:36:29,490 - api.logger - INFO - breach duration of 278 hours
+2024-11-12 13:36:29,490 - api.logger - INFO - calculo monto = 14.9
+2024-11-12 13:36:29,504 - api.logger - INFO - SLA status updated for open Ticket ID 11, calculo_monto set to 14.9, monto set to 0
+2024-11-12 13:36:29,508 - api.logger - INFO - ticket 12 has breached sla
+2024-11-12 13:36:29,509 - api.logger - INFO - breach duration of 260 hours
+2024-11-12 13:36:29,510 - api.logger - INFO - calculo monto = 14.0
+2024-11-12 13:36:29,513 - api.logger - INFO - skiped update of costo from open ticket id 12 because there was no change in calculo_monto14.00, and 14.00
+2024-11-12 13:36:29,518 - api.logger - INFO - ticket 13 has breached sla
+2024-11-12 13:36:29,519 - api.logger - INFO - breach duration of 253 hours
+2024-11-12 13:36:29,520 - api.logger - INFO - calculo monto = 13.65
+2024-11-12 13:36:29,522 - api.logger - INFO - skiped update of costo from open ticket id 13 because there was no change in calculo_monto13.65, and 13.65
+2024-11-12 13:36:29,532 - api.logger - INFO - ticket 15 has breached sla
+2024-11-12 13:36:29,532 - api.logger - INFO - breach duration of 181 hours
+2024-11-12 13:36:29,533 - api.logger - INFO - calculo monto = 10.05
+2024-11-12 13:36:29,536 - api.logger - INFO - skiped update of costo from open ticket id 15 because there was no change in calculo_monto10.05, and 10.05
+2024-11-12 13:36:29,541 - api.logger - INFO - ticket 16 has breached sla
+2024-11-12 13:36:29,541 - api.logger - INFO - breach duration of 181 hours
+2024-11-12 13:36:29,542 - api.logger - INFO - calculo monto = 10.05
+2024-11-12 13:36:29,544 - api.logger - INFO - skiped update of costo from open ticket id 16 because there was no change in calculo_monto10.05, and 10.05
+2024-11-12 13:36:29,549 - api.logger - INFO - ticket 17 has breached sla
+2024-11-12 13:36:29,550 - api.logger - INFO - breach duration of 181 hours
+2024-11-12 13:36:29,550 - api.logger - INFO - calculo monto = 10.05
+2024-11-12 13:36:29,554 - api.logger - INFO - skiped update of costo from open ticket id 17 because there was no change in calculo_monto10.05, and 10.05
+2024-11-12 13:36:29,558 - api.logger - INFO - ticket 18 has breached sla
+2024-11-12 13:36:29,559 - api.logger - INFO - breach duration of 97 hours
+2024-11-12 13:36:29,560 - api.logger - INFO - calculo monto = 5.8500000000000005
+2024-11-12 13:36:29,562 - api.logger - INFO - skiped update of costo from open ticket id 18 because there was no change in calculo_monto5.85, and 5.85
+2024-11-12 13:36:29,566 - api.logger - INFO - ticket 19 has breached sla
+2024-11-12 13:36:29,566 - api.logger - INFO - breach duration of 97 hours
+2024-11-12 13:36:29,567 - api.logger - INFO - calculo monto = 5.8500000000000005
+2024-11-12 13:36:29,569 - api.logger - INFO - skiped update of costo from open ticket id 19 because there was no change in calculo_monto5.85, and 5.85
+2024-11-12 13:36:29,573 - api.logger - INFO - ticket 20 has breached sla
+2024-11-12 13:36:29,574 - api.logger - INFO - breach duration of 97 hours
+2024-11-12 13:36:29,575 - api.logger - INFO - calculo monto = 5.8500000000000005
+2024-11-12 13:36:29,578 - api.logger - INFO - skiped update of costo from open ticket id 20 because there was no change in calculo_monto5.85, and 5.85
+2024-11-12 13:36:29,582 - api.logger - INFO - ticket 21 is at risk
+2024-11-12 13:36:29,582 - api.logger - INFO - calculo monto = 1.0
+2024-11-12 13:36:29,585 - api.logger - INFO - skiped update of costo from open ticket id 21 because there was no change in calculo_monto1.00, and 1.00
+2024-11-12 13:36:29,589 - api.logger - ERROR - Error updating SLA status: cannot access local variable 'calc_monto' where it is not associated with a value
+2024-11-12 13:36:29,593 - api.logger - INFO - on: calcular_presupuesto_gastado. Starting presupuesto_gastado calculation for 2024-11-12.
+2024-11-12 13:36:29,594 - api.logger - INFO - on: calcular_presupuesto_gastado. month calculated to 2024-11.
+2024-11-12 13:36:29,599 - api.logger - INFO - on: calcular_presupuesto_gastado. Presupuesto record already exists for 2024/11
+2024-11-12 13:36:29,600 - api.logger - INFO - on: calcular_presupuesto_gastado. No changes in 'presupuesto_gastado' for 2024-11; no update needed.
+2024-11-12 13:56:44,472 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 3. Skipping update.
+2024-11-12 13:56:44,475 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 4. Skipping update.
+2024-11-12 13:56:44,478 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 5. Skipping update.
+2024-11-12 13:56:44,481 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 6. Skipping update.
+2024-11-12 13:56:44,494 - api.logger - INFO - ticket 11 has breached sla
+2024-11-12 13:56:44,495 - api.logger - INFO - breach duration of 278 hours
+2024-11-12 13:56:44,495 - api.logger - INFO - calculo monto = 14.9
+2024-11-12 13:56:44,497 - api.logger - INFO - skiped update of costo from open ticket id 11 because there was no change in calculo_monto14.90, and 14.90
+2024-11-12 13:56:44,501 - api.logger - INFO - ticket 12 has breached sla
+2024-11-12 13:56:44,501 - api.logger - INFO - breach duration of 261 hours
+2024-11-12 13:56:44,502 - api.logger - INFO - calculo monto = 14.05
+2024-11-12 13:56:44,523 - api.logger - INFO - SLA status updated for open Ticket ID 12, calculo_monto set to 14.05, monto set to 0
+2024-11-12 13:56:44,526 - api.logger - INFO - ticket 13 has breached sla
+2024-11-12 13:56:44,527 - api.logger - INFO - breach duration of 253 hours
+2024-11-12 13:56:44,527 - api.logger - INFO - calculo monto = 13.65
+2024-11-12 13:56:44,528 - api.logger - INFO - skiped update of costo from open ticket id 13 because there was no change in calculo_monto13.65, and 13.65
+2024-11-12 13:56:44,533 - api.logger - INFO - ticket 15 has breached sla
+2024-11-12 13:56:44,533 - api.logger - INFO - breach duration of 182 hours
+2024-11-12 13:56:44,534 - api.logger - INFO - calculo monto = 10.1
+2024-11-12 13:56:44,542 - api.logger - INFO - SLA status updated for open Ticket ID 15, calculo_monto set to 10.1, monto set to 0
+2024-11-12 13:56:44,545 - api.logger - INFO - ticket 16 has breached sla
+2024-11-12 13:56:44,545 - api.logger - INFO - breach duration of 181 hours
+2024-11-12 13:56:44,546 - api.logger - INFO - calculo monto = 10.05
+2024-11-12 13:56:44,547 - api.logger - INFO - skiped update of costo from open ticket id 16 because there was no change in calculo_monto10.05, and 10.05
+2024-11-12 13:56:44,549 - api.logger - INFO - ticket 17 has breached sla
+2024-11-12 13:56:44,550 - api.logger - INFO - breach duration of 181 hours
+2024-11-12 13:56:44,550 - api.logger - INFO - calculo monto = 10.05
+2024-11-12 13:56:44,551 - api.logger - INFO - skiped update of costo from open ticket id 17 because there was no change in calculo_monto10.05, and 10.05
+2024-11-12 13:56:44,554 - api.logger - INFO - ticket 18 has breached sla
+2024-11-12 13:56:44,555 - api.logger - INFO - breach duration of 98 hours
+2024-11-12 13:56:44,555 - api.logger - INFO - calculo monto = 5.9
+2024-11-12 13:56:44,563 - api.logger - INFO - SLA status updated for open Ticket ID 18, calculo_monto set to 5.9, monto set to 0
+2024-11-12 13:56:44,567 - api.logger - INFO - ticket 19 has breached sla
+2024-11-12 13:56:44,567 - api.logger - INFO - breach duration of 98 hours
+2024-11-12 13:56:44,567 - api.logger - INFO - calculo monto = 5.9
+2024-11-12 13:56:44,575 - api.logger - INFO - SLA status updated for open Ticket ID 19, calculo_monto set to 5.9, monto set to 0
+2024-11-12 13:56:44,577 - api.logger - INFO - ticket 20 has breached sla
+2024-11-12 13:56:44,578 - api.logger - INFO - breach duration of 98 hours
+2024-11-12 13:56:44,578 - api.logger - INFO - calculo monto = 5.9
+2024-11-12 13:56:44,588 - api.logger - INFO - SLA status updated for open Ticket ID 20, calculo_monto set to 5.9, monto set to 0
+2024-11-12 13:56:44,591 - api.logger - INFO - ticket 21 is at risk
+2024-11-12 13:56:44,591 - api.logger - INFO - calculo monto = 1.0
+2024-11-12 13:56:44,592 - api.logger - INFO - skiped update of costo from open ticket id 21 because there was no change in calculo_monto1.00, and 1.00
+2024-11-12 13:56:44,595 - api.logger - ERROR - Error updating SLA status: cannot access local variable 'calc_monto' where it is not associated with a value
+2024-11-12 13:56:44,598 - api.logger - INFO - on: calcular_presupuesto_gastado. Starting presupuesto_gastado calculation for 2024-11-12.
+2024-11-12 13:56:44,599 - api.logger - INFO - on: calcular_presupuesto_gastado. month calculated to 2024-11.
+2024-11-12 13:56:44,602 - api.logger - INFO - on: calcular_presupuesto_gastado. Presupuesto record already exists for 2024/11
+2024-11-12 13:56:44,603 - api.logger - INFO - on: calcular_presupuesto_gastado. No changes in 'presupuesto_gastado' for 2024-11; no update needed.
+2024-11-12 13:56:44,622 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 3. Skipping update.
+2024-11-12 13:56:44,625 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 4. Skipping update.
+2024-11-12 13:56:44,628 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 5. Skipping update.
+2024-11-12 13:56:44,631 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 6. Skipping update.
+2024-11-12 13:56:44,643 - api.logger - INFO - ticket 11 has breached sla
+2024-11-12 13:56:44,644 - api.logger - INFO - breach duration of 278 hours
+2024-11-12 13:56:44,644 - api.logger - INFO - calculo monto = 14.9
+2024-11-12 13:56:44,646 - api.logger - INFO - skiped update of costo from open ticket id 11 because there was no change in calculo_monto14.90, and 14.90
+2024-11-12 13:56:44,648 - api.logger - INFO - ticket 12 has breached sla
+2024-11-12 13:56:44,649 - api.logger - INFO - breach duration of 261 hours
+2024-11-12 13:56:44,649 - api.logger - INFO - calculo monto = 14.05
+2024-11-12 13:56:44,651 - api.logger - INFO - skiped update of costo from open ticket id 12 because there was no change in calculo_monto14.05, and 14.05
+2024-11-12 13:56:44,655 - api.logger - INFO - ticket 13 has breached sla
+2024-11-12 13:56:44,655 - api.logger - INFO - breach duration of 253 hours
+2024-11-12 13:56:44,656 - api.logger - INFO - calculo monto = 13.65
+2024-11-12 13:56:44,657 - api.logger - INFO - skiped update of costo from open ticket id 13 because there was no change in calculo_monto13.65, and 13.65
+2024-11-12 13:56:44,662 - api.logger - INFO - ticket 15 has breached sla
+2024-11-12 13:56:44,663 - api.logger - INFO - breach duration of 182 hours
+2024-11-12 13:56:44,663 - api.logger - INFO - calculo monto = 10.1
+2024-11-12 13:56:44,665 - api.logger - INFO - skiped update of costo from open ticket id 15 because there was no change in calculo_monto10.10, and 10.10
+2024-11-12 13:56:44,668 - api.logger - INFO - ticket 16 has breached sla
+2024-11-12 13:56:44,669 - api.logger - INFO - breach duration of 181 hours
+2024-11-12 13:56:44,670 - api.logger - INFO - calculo monto = 10.05
+2024-11-12 13:56:44,671 - api.logger - INFO - skiped update of costo from open ticket id 16 because there was no change in calculo_monto10.05, and 10.05
+2024-11-12 13:56:44,674 - api.logger - INFO - ticket 17 has breached sla
+2024-11-12 13:56:44,675 - api.logger - INFO - breach duration of 181 hours
+2024-11-12 13:56:44,675 - api.logger - INFO - calculo monto = 10.05
+2024-11-12 13:56:44,677 - api.logger - INFO - skiped update of costo from open ticket id 17 because there was no change in calculo_monto10.05, and 10.05
+2024-11-12 13:56:44,679 - api.logger - INFO - ticket 18 has breached sla
+2024-11-12 13:56:44,679 - api.logger - INFO - breach duration of 98 hours
+2024-11-12 13:56:44,680 - api.logger - INFO - calculo monto = 5.9
+2024-11-12 13:56:44,682 - api.logger - INFO - skiped update of costo from open ticket id 18 because there was no change in calculo_monto5.90, and 5.90
+2024-11-12 13:56:44,685 - api.logger - INFO - ticket 19 has breached sla
+2024-11-12 13:56:44,685 - api.logger - INFO - breach duration of 98 hours
+2024-11-12 13:56:44,686 - api.logger - INFO - calculo monto = 5.9
+2024-11-12 13:56:44,688 - api.logger - INFO - skiped update of costo from open ticket id 19 because there was no change in calculo_monto5.90, and 5.90
+2024-11-12 13:56:44,690 - api.logger - INFO - ticket 20 has breached sla
+2024-11-12 13:56:44,691 - api.logger - INFO - breach duration of 98 hours
+2024-11-12 13:56:44,692 - api.logger - INFO - calculo monto = 5.9
+2024-11-12 13:56:44,693 - api.logger - INFO - skiped update of costo from open ticket id 20 because there was no change in calculo_monto5.90, and 5.90
+2024-11-12 13:56:44,696 - api.logger - INFO - ticket 21 is at risk
+2024-11-12 13:56:44,697 - api.logger - INFO - calculo monto = 1.0
+2024-11-12 13:56:44,698 - api.logger - INFO - skiped update of costo from open ticket id 21 because there was no change in calculo_monto1.00, and 1.00
+2024-11-12 13:56:44,701 - api.logger - ERROR - Error updating SLA status: cannot access local variable 'calc_monto' where it is not associated with a value
+2024-11-12 13:56:44,703 - api.logger - INFO - on: calcular_presupuesto_gastado. Starting presupuesto_gastado calculation for 2024-11-12.
+2024-11-12 13:56:44,704 - api.logger - INFO - on: calcular_presupuesto_gastado. month calculated to 2024-11.
+2024-11-12 13:56:44,707 - api.logger - INFO - on: calcular_presupuesto_gastado. Presupuesto record already exists for 2024/11
+2024-11-12 13:56:44,708 - api.logger - INFO - on: calcular_presupuesto_gastado. No changes in 'presupuesto_gastado' for 2024-11; no update needed.
+2024-11-12 13:56:55,625 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 3. Skipping update.
+2024-11-12 13:56:55,629 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 4. Skipping update.
+2024-11-12 13:56:55,633 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 5. Skipping update.
+2024-11-12 13:56:55,636 - api.logger - WARNING - Expected closure date not found for closed Ticket ID 6. Skipping update.
+2024-11-12 13:56:55,651 - api.logger - INFO - ticket 11 has breached sla
+2024-11-12 13:56:55,652 - api.logger - INFO - breach duration of 278 hours
+2024-11-12 13:56:55,652 - api.logger - INFO - calculo monto = 14.9
+2024-11-12 13:56:55,654 - api.logger - INFO - skiped update of costo from open ticket id 11 because there was no change in calculo_monto14.90, and 14.90
+2024-11-12 13:56:55,657 - api.logger - INFO - ticket 12 has breached sla
+2024-11-12 13:56:55,658 - api.logger - INFO - breach duration of 261 hours

@@ -14,6 +14,7 @@ import { decodeToken } from './utils';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import apiClient from './components/apiClient';
+import SlaRelatedData from './pages/SlaRelatedData';
 
 // Configuración de Axios
 apiClient.interceptors.response.use(
@@ -74,6 +75,7 @@ function MainContent({ nombreUsuario, userRole }) {
           <Route path="/tickets-list" element={<PrivateRoute><TicketsList /></PrivateRoute>} />
           <Route path="/tickets/edit/:id" element={<PrivateRoute requiredRole="admin"><EditTicket /></PrivateRoute>} />
           <Route path="/tickets-cerrados" element={<PrivateRoute requiredRole="admin"><ClosedTicketsList /></PrivateRoute>} />
+          <Route path="/sla-data" element={<PrivateRoute requiredRole="admin"><SlaRelatedData /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </div>

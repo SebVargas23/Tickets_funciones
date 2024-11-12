@@ -26,6 +26,9 @@ const Sidebar = ({ userRole }) => {
             <li>
               <Link to="/tickets-cerrados">Tickets Cerrados</Link>
             </li>
+            <li>
+              <Link to="/sla-data">Datos de sla</Link>
+            </li>
           </>
         )}
       </ul>
