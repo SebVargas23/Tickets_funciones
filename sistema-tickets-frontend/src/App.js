@@ -68,7 +68,7 @@ function MainContent({ nombreUsuario, userRole }) {
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/registro" element={<PrivateRoute requiredRole="admin"><RegistroUsuario /></PrivateRoute>} />
+          <Route path="/registro" element={<RegistroUsuario />} />
           <Route path="/dashboard" element={<PrivateRoute requiredRole="admin"><Dashboard /></PrivateRoute>} />
           <Route path="/tickets" element={<PrivateRoute><Tickets /></PrivateRoute>} />
           <Route path="/tickets-list" element={<PrivateRoute><TicketsList /></PrivateRoute>} />

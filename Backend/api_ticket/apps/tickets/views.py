@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from .models import Usuario, Ticket
-from django.db.models import Count
+from django.db.models import Count, F, Avg
 from apps.tickets.tasks import calcular_presupuesto_gastado, update_sla_status, definir_costo
 from api.logger import logger
 
@@ -298,22 +298,71 @@ class sla_presupuestoView(generics.ListAPIView):
 
 @api_view(['GET'])
 def dashboard_stats(request):
+    # Estadísticas generales
     usuarios_totales = Usuario.objects.count()
     tickets_totales = Ticket.objects.count()
     tickets_abiertos = Ticket.objects.filter(estado__nom_estado="Abierto").count()
     tickets_cerrados = Ticket.objects.filter(estado__nom_estado="Cerrado").count()
-    tickets_pendientes = Ticket.objects.filter(estado__nom_estado="Pendiente").count()
-    # Agrega más estadísticas según necesites
+    tickets_asignados = Ticket.objects.filter(estado__nom_estado="Asignado").count()
+    tickets_reabiertos = Ticket.objects.filter(estado__nom_estado="Reabierto").count()
 
+    # Tickets por Departamento
+    tickets_por_departamento = Ticket.objects.values('user__cargo__departamento__nom_departamento').annotate(
+        total=Count('id')
+    ).order_by('-total')
+
+
+    # Tickets por Categoría
+    tickets_por_categoria = Ticket.objects.values('categoria__nom_categoria').annotate(
+        total=Count('id')
+    ).order_by('-total')
+
+    # Calcular el tiempo de cierre
+    tiempos_cierre = []
+    tickets_cerrados_qs = Ticket.objects.filter(estado__nom_estado="Cerrado")
+
+    for ticket in tickets_cerrados_qs:
+        fecha_creacion = FechaTicket.objects.filter(ticket=ticket, tipo_fecha="Creacion").first()
+        fecha_cierre = FechaTicket.objects.filter(ticket=ticket, tipo_fecha="Cierre").first()
+        
+        if fecha_creacion and fecha_cierre:
+            tiempo_cierre = (fecha_cierre.fecha - fecha_creacion.fecha).days
+            tiempos_cierre.append({
+                "ticket_id": ticket.id,
+                "dias_cierre": tiempo_cierre
+            })
+        
+        # Tiempo promedio en cada estado
+    tiempos_promedio_por_estado = (
+        FechaTicket.objects.filter(tipo_fecha="Cierre")  # Filtro para tickets con fecha de cierre
+        .values('ticket__estado__nom_estado')           # Agrupar por estado
+        .annotate(promedio_dias=Avg(F('fecha') - F('ticket__fechaticket_set__fecha')))  # Promedio de días
+    )
+
+    # Convertir timedelta en días (para que sea más legible en el frontend)
+    tiempos_promedio_por_estado = [
+        {
+            'estado': entry['ticket__estado__nom_estado'],
+            'promedio_dias': entry['promedio_dias'].days if entry['promedio_dias'] else 0
+        }
+        for entry in tiempos_promedio_por_estado
+    ]
+    # Construir la respuesta
     data = {
         "usuarios_totales": usuarios_totales,
         "tickets_totales": tickets_totales,
         "tickets_abiertos": tickets_abiertos,
         "tickets_cerrados": tickets_cerrados,
-        "tickets_pendientes": tickets_pendientes,
-        # Agrega otros datos aquí
+        "tickets_asignados": tickets_asignados,
+        "tickets_reabiertos": tickets_reabiertos,
+        "tiempos_cierre": tiempos_cierre,
+        "tickets_por_departamento": list(tickets_por_departamento),  # Convertir a lista
+        "tickets_por_categoria": list(tickets_por_categoria),  # Convertir a lista
+        "tiempos_promedio_por_estado": tiempos_promedio_por_estado,
     }
+
     return Response(data)
+
 
 @api_view(['GET'])
 def list_usuarios(request):

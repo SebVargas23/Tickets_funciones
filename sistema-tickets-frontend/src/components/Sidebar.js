@@ -13,16 +13,16 @@ const Sidebar = ({ userRole }) => {
         <li>
           <Link to="/tickets-list">Lista de Tickets</Link>
         </li>
-
+        <li>
+          <Link to="/registro">Usuario</Link>
+        </li>
         {/* Opciones exclusivas para el administrador */}
         {userRole === 'admin' && (
           <>
             <li>
               <Link to="/dashboard">Dashboard</Link>
             </li>
-            <li>
-              <Link to="/registro">Registro de Usuario</Link>
-            </li>
+            
             <li>
               <Link to="/tickets-cerrados">Tickets Cerrados</Link>
             </li>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import '../App.css';
+import apiClient from '../components/apiClient';
+import { useNavigate } from 'react-router-dom';
 import { decodeToken } from '../utils';
 import Avatar from '../imagenes/Avatar.jpg';
-import apiClient from '../components/apiClient';
+import '../App.css';
 
 const RegistroUsuario = () => {
     const [formData, setFormData] = useState({
@@ -21,27 +21,49 @@ const RegistroUsuario = () => {
     const [cargos, setCargos] = useState([]);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+    const [userStats, setUserStats] = useState({});
     const [isAdmin, setIsAdmin] = useState(false);
+
+    // Mapeo de ID de departamento a nombres de departamento
+    const departamentos = {
+        1: 'TI',
+        2: 'P&O',
+        3: 'Marketing',
+        4: 'Merchandising',
+        5: 'Finanzas',
+        6: 'Compliance',
+        7: 'EBP',
+    };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
             const decoded = decodeToken(token);
-            setIsAdmin(decoded.role === 'admin');  // Verifica si el usuario actual es admin
+            setIsAdmin(decoded.role === 'admin'); // Determinamos si es admin
+
+            // Obtener datos del usuario autenticado y estadísticas
+            const fetchUserStats = async () => {
+                try {
+                    const response = await apiClient.get(`usuarios/${decoded.user_id}/`);
+                    setUserStats(response.data);
+                } catch (error) {
+                    console.error('Error al obtener estadísticas del usuario:', error);
+                }
+            };
+            fetchUserStats();
+            const fetchCargos = async () => {
+                try {
+                    const response = await apiClient.get('cargos/');
+                    //importante añadir header
+                    setCargos(response.data);
+                } catch (error) {
+                    console.error('Error al obtener los cargos:', error);
+                }
+            };
+            fetchCargos();
         }
-
-        const fetchCargos = async () => {
-            try {
-                const response = await apiClient.get('cargos/');
-                //importante añadir header
-                setCargos(response.data);
-            } catch (error) {
-                console.error('Error al obtener los cargos:', error);
-            }
-        };
-
-        fetchCargos();
     }, []);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -72,19 +94,28 @@ const RegistroUsuario = () => {
 
     return (
         <div className="registration-container">
+            {/* Sección del perfil del usuario */}
             <div className="user-profile-section">
-            <img src={Avatar} alt="Avatar" className="user-avatar" />
-                <h2>{formData.nom_usuario || "Nuevo Usuario"}</h2>
-                <p>{formData.cargo ? cargos.find(c => c.id === Number(formData.cargo))?.nom_cargo : "Seleccione un cargo"}</p>
-                <button className="follow-button">Seguir</button>
-                <p className="description">
-                    Bienvenido a la plataforma. Completa los detalles de tu cuenta para continuar.
+                <img src={Avatar} alt="Avatar" className="user-avatar" />
+                <h2>{userStats.nom_usuario || "Usuario"}</h2>
+                <p>
+                    {userStats.cargo?.nom_cargo
+                        ? `${userStats.cargo.nom_cargo} (${departamentos[userStats.cargo.departamento] || "Sin departamento"})`
+                        : "Cargo no asignado"}
                 </p>
+                <p className="description">
+                    Bienvenido a la plataforma. Aquí puedes ver tu información personal y estadísticas.
+                </p>
+                <p><strong>Correo:</strong> {userStats.correo || "No disponible"}</p>
+                <p><strong>Teléfono:</strong> {userStats.telefono || "No disponible"}</p>
+                <p><strong>Tickets Creados:</strong> {userStats.tickets_creados || 0}</p>
             </div>
 
-            <div className="account-details-section">
-                <h3>Detalles de la Cuenta</h3>
-                <form onSubmit={handleSubmit}>
+            {/* Sección de registro solo visible para admins */}
+            {isAdmin && (
+                <div className="account-details-section">
+                    <h3>Registrar Nuevo Usuario</h3>
+                    <form onSubmit={handleSubmit}>
                     <div className="form-grid">
                         <div className="input-group">
                             <label>RUT Usuario</label>
@@ -153,8 +184,8 @@ const RegistroUsuario = () => {
                     </div>
                     <button type="submit" className="update-account-button">Registrar Usuario</button>
                 </form>
-                <p>¿Ya tienes una cuenta? <Link to="/login">Inicia sesión aquí</Link></p>
-            </div>
+                </div>
+            )}
         </div>
     );
 };

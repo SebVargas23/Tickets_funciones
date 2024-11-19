@@ -10,6 +10,10 @@ from .serializers import CargoSerializer, CustomTokenObtainPairSerializer, Usuar
 from rest_framework_simplejwt.views import TokenObtainPairView # type: ignore
 from django.contrib.auth import get_user_model
 
+from rest_framework.decorators import api_view
+from .models import Usuario
+from apps.tickets.models import Ticket
+
 class LoginView(KnoxLoginView):
     permission_classes = (permissions.AllowAny,)
     def post(self, request, format=None):
@@ -54,3 +58,22 @@ class UsuarioListAPIView(generics.ListAPIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+@api_view(['GET'])
+def obtener_usuario(request, id):
+    try:
+        usuario = Usuario.objects.get(pk=id)
+        tickets_creados = Ticket.objects.filter(user=usuario).count()
+        data = {
+            'nom_usuario': usuario.nom_usuario,
+            'correo': usuario.correo,
+            'telefono': usuario.telefono,
+            'cargo': {
+                'nom_cargo': usuario.cargo.nom_cargo if usuario.cargo else None,
+                'departamento': usuario.cargo.departamento.nom_departamento if usuario.cargo and usuario.cargo.departamento else None
+            } if usuario.cargo else None,
+            'tickets_creados': tickets_creados,
+        }
+        return Response(data)
+    except Usuario.DoesNotExist:
+        return Response({'error': 'Usuario no encontrado'}, status=404)
