@@ -7,7 +7,7 @@ const SlaRelatedData = () => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);  // Added error state
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     const fetchData = async () => {
       // Fetch data from the backend API
@@ -32,16 +32,33 @@ const SlaRelatedData = () => {
     fetchData();  // Call the fetchData function inside useEffect
   }, [navigate]);
 
-  const calcHoras = (calcMonto) => {
-    return ((calcMonto - 1.00) / 0.05).toFixed(2);
+  const calcMonto_final = (monto, horasAtraso) => {
+    return (monto * ( 1 + ( 0.05 * horasAtraso ))).toFixed(2);
   };
-  const calcMonto_final = (monto, calcMonto) => {
-    return (monto * calcMonto).toFixed(2);
+  const getResumenMonto = (amount) => {
+    if (amount >= 1000000) {
+      return `${(amount / 1000000).toFixed(2)}M`;
+    } else if (amount >= 1000) {
+        return `${(amount / 1000).toFixed(2)}K`;
+    } else {
+        return `${amount}`;
+    }
   };
+  const getSlaCss = (sla_status) =>{
+    if (sla_status === "Atrasado"){
+      return 1
+    }
+    else if (sla_status === "En riesgo"){
+      return 2
+    }
+    else{
+      return 3
+    }
 
-  const handleTicketClick = (ticketId) => {
+  }
+  const handleTicketClick = (Id) => {
     // Redirect to the edit ticket page
-    navigate(`/edit_ticket/${ticketId}`);
+    navigate(`/tickets/edit/${Id}`);
   };
 
   if (error) {
@@ -58,16 +75,16 @@ const SlaRelatedData = () => {
       <section className="budget-overview">
         <h1>Resumen del presupuesto de este mes</h1>
         <div className="budget-details">
-          <p><strong>Presupuesto Mensual:</strong> ${data.presupuesto.presupuesto_mensual}</p>
-          <p><strong>Presupuesto Gastado:</strong> ${data.presupuesto.presupuesto_gastado}</p>
+          <p><strong>Presupuesto Mensual:</strong> ${getResumenMonto(data.presupuesto.presupuesto_mensual)}</p>
+          <p><strong>Presupuesto Gastado:</strong> ${getResumenMonto(data.presupuesto.presupuesto_gastado)}</p>
           <p><strong>Fecha del Presupuesto:</strong> {data.presupuesto.fecha_presupuesto}</p>
-          <p><strong>Presupuesto Restante:</strong> ${data.presupuesto.presupuesto_restante}</p>
-          <p><strong>Over Budget:</strong> {data.presupuesto.over_budget ? "Yes" : "No"}</p>
+          <p><strong>Presupuesto Restante:</strong> ${getResumenMonto(data.presupuesto.presupuesto_restante)}</p>
+          <p><strong>presupuesto exedido:</strong> {data.presupuesto.over_budget ? "Yes" : "No"}</p>
         </div>
       </section>
 
       <section className="worst-tickets">
-        <h2>Casos criticos abiertos</h2>
+        <h2>tickets por horas de atraso</h2>
         <table className="tickets-table">
           <thead>
             <tr>
@@ -82,14 +99,16 @@ const SlaRelatedData = () => {
           </thead>
           <tbody>
             {data.worst_tickets.map((ticket) => (
-              <tr key={ticket.ticket_id} onClick={() => handleTicketClick(ticket.ticket_id)} style={{ cursor: 'pointer' }}>
-                <td>{ticket.ticket_id}</td>
+              <tr key={ticket.ticket_id} onClick={() => handleTicketClick(ticket.id)} style={{ cursor: 'pointer' }}>
+                <td>{ticket.id}</td>
                 <td>{ticket.title}</td>
-                <td>{ticket.sla_status}</td>
-                <td>${ticket.monto}</td>
+                <td><span className={`priority-badge priority-${getSlaCss(ticket.sla_status)}`}>
+                  {ticket.sla_status}
+                </span></td>
+                <td>${getResumenMonto(ticket.monto)}</td>
                 <td>{ticket.dates.find(date => date.type === 'cierre_esperado')?.date}</td>
-                <td>{calcHoras(ticket.calculo_monto)}</td>
-                <td>${calcMonto_final(ticket.monto, ticket.calculo_monto)}</td>
+                <td>{ticket.horas_atraso}hrs</td>
+                <td>${getResumenMonto(calcMonto_final(ticket.monto, ticket.horas_atraso))}</td>
               </tr>
             ))}
           </tbody>

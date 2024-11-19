@@ -12,8 +12,14 @@
     border-radius: 8px;
     margin-bottom: 20px;
   }
+  .budget-overview h1 {
+    font-size: 2rem;
+    color: #333;
+  }
+
   
   .budget-details p {
+    color: #333;
     font-size: 1.1rem;
     line-height: 1.6;
   }
@@ -118,3 +124,17 @@
     border-radius: 8px;
   }
   
+
+  .priority-badge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    display: inline-block;
+    font-size: 0.9em;
+  }
+  
+  .priority-1 { background-color: #dc3545; }
+  .priority-2 { background-color: #ffc107; color: black; }
+  .priority-3 { background-color: #28a745; }

@@ -239,7 +239,7 @@ class sla_presupuestoView(generics.ListAPIView):
                 # Convert the date string to a date object
                 fecha_request = datetime.strptime(fecha_request_str, "%Y-%m-%d").date()
             except ValueError:
-                return Response({"error": "Invalid date format. Please provide the date in 'YYYY-MM-DD' format."}, status=400)
+                return Response({"error": "formato invalido de fecha, porfavor introducir fecha en el formato : 'YYYY-MM-DD'."}, status=400)
         else:
             # Default to the current date if 'date' is not provided
             fecha_request = timezone.now().date()  # Get the current date (ignoring the time part)
@@ -247,7 +247,7 @@ class sla_presupuestoView(generics.ListAPIView):
         # Step 3: Extract month and year from the date
         month = fecha_request.month
         year = fecha_request.year
-        
+        calcular_presupuesto_gastado(fecha_request)
         # Step 1: Retrieve `PresupuestoTI` for the specified month and year
         try:
             presupuesto_ti = PresupuestoTI.objects.get(
@@ -257,13 +257,13 @@ class sla_presupuestoView(generics.ListAPIView):
             presupuesto_data = PresupuestoTISerializer(presupuesto_ti).data
         except PresupuestoTI.DoesNotExist:
             return Response({"error": f"No budget information found for {month}/{year}."}, status=404)
-        calcular_presupuesto_gastado(fecha_request)
+        
         
         costos_filtered = Costo.objects.filter(
             fecha__year=year,
             fecha__month=month,
-            monto_final__lte=0  # Only open tickets
-        ).select_related('ticket').order_by('-calculo_monto')[:5]
+            cierre = False,  # Only open tickets
+        ).select_related('ticket').order_by('-horas_atraso')[:10]
         worst_tickets_data = []
         if not costos_filtered:
             worst_tickets_data = [{"message": "No open tickets found for the selected period."}]
@@ -272,10 +272,10 @@ class sla_presupuestoView(generics.ListAPIView):
                 ticket = costo.ticket
                 # Collecting ticket data including title, sla_status, and cost
                 ticket_data = {
-                    "ticket_id": ticket.id,
+                    "id": ticket.id,
                     "title": ticket.titulo,
                     "sla_status": ticket.sla_status,
-                    "calculo_monto": costo.calculo_monto,
+                    "horas_atraso": costo.horas_atraso,
                     "monto":costo.monto,
                     "monto_final": costo.monto_final,
                     "dates": [

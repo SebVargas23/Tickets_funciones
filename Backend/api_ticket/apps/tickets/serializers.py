@@ -121,4 +121,4 @@ class PresupuestoTISerializer(serializers.ModelSerializer):
 class CostoSerializer(serializers.ModelSerializer):    
     class Meta:
         model = Costo
-        fields = ['id', 'ticket', 'presupuesto_ti', 'monto', 'calculo_monto', 'monto_final', 'fecha']
+        fields = ['id', 'ticket', 'presupuesto_ti', 'monto', 'horas_atraso','cierre' , 'monto_final', 'fecha']

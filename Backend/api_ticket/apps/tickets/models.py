@@ -1,8 +1,9 @@
+from decimal import ROUND_HALF_UP, Decimal
 from django.db import models, IntegrityError
 from datetime import timedelta
 from apps.autenticacion.models import Usuario # Importa el modelo de usuario personalizado
 from django.core.exceptions import ValidationError
-from django.db.models import Q, F
+from django.db.models import Q, F, Sum
 from django.db.models.constraints import UniqueConstraint
 from api.logger import logger
 
@@ -52,7 +53,7 @@ class PresupuestoTI(models.Model):
 
     def __str__(self):
         return f"{self.fecha_presupuesto.strftime('%Y-%m')} - Spent: {self.presupuesto_gastado} / Monthly Budget: {self.presupuesto_mensual}"
-    
+
     def clean(self):
         # Ensure no duplicate presupuesto for the same month
         if self.fecha_presupuesto.day != 1:
@@ -65,21 +66,44 @@ class PresupuestoTI(models.Model):
 
         if duplicate.exists():
             raise ValidationError(f"Ya existe un presupuesto para el mes: {self.fecha_presupuesto.strftime('%Y-%m')}. Solo se permite 1 presupuesto por mes.")
-
-        # Calculate remaining budget and set the over_budget flag
-        if self.presupuesto_mensual and self.presupuesto_gastado is not None:
-            self.presupuesto_restante = self.presupuesto_mensual - self.presupuesto_gastado
-            self.over_budget = self.presupuesto_gastado > self.presupuesto_mensual
+        
     
     def save(self, *args, **kwargs):
         # Call clean method to validate data before saving
         self.clean()
-        super().save(*args, **kwargs)
+        
+        # Recalculate the current 'presupuesto_gastado'
+        recalculated_gastado = Decimal(self.costos.filter(cierre=True).aggregate(
+            total=Sum('monto_final')
+        )['total'] or 0)
+        print(recalculated_gastado)
+
+        # Fetch the current 'presupuesto_gastado' from the database
+        if self.pk:  # Only if this is not a new instance
+            current_gastado = Decimal(PresupuestoTI.objects.filter(pk=self.pk).values_list(
+                'presupuesto_gastado', flat=True
+            ).first() or 0)
+        else:
+            current_gastado = Decimal(0)  # New instances have no current value
+        
+        # Only update if the recalculated value differs
+        try:
+            if not self.pk or recalculated_gastado != current_gastado:
+                self.presupuesto_gastado = recalculated_gastado
+                self.presupuesto_restante = self.presupuesto_mensual - self.presupuesto_gastado
+                self.over_budget = self.presupuesto_gastado > self.presupuesto_mensual
+                super().save(*args, **kwargs)  # Save only if there's a change
+            else:
+                # Log or skip saving since there are no changes
+                logger.info(f"No changes detected for 'presupuesto_gastado'. Save skipped for {self.fecha_presupuesto.strftime('%Y-%m')}.")
+        except Exception as e:
+            logger.error(f"unexpected error on saving presupuesto object {self.id}, {str(e)}")
+            
 
 class Ticket(models.Model):
     titulo = models.CharField(max_length=255)
     comentario = models.TextField(null=True, blank=True)
-    sla_status = models.CharField(max_length=40,default="On Track", null= True, blank= True)
+    sla_status = models.CharField(max_length=40,default="Al dia", null= True, blank= True)
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
     prioridad = models.ForeignKey('Prioridad', on_delete=models.CASCADE)
     servicio = models.ForeignKey('Servicio', on_delete=models.CASCADE)
@@ -119,8 +143,8 @@ class FechaTicket(models.Model):
                 creation_date = creation_date_obj.fecha
                 logger.debug(f"on:FechaTicket save. Creation Date: {creation_date}")  # Use the 'fecha' field from FechaTicket for creation date
                 
-                sla_duration_hours = 48  # You can use a dynamic SLA based on priority or other factors
-                
+                sla_duration_hours = 48  # actualizar  para que revise ticket.prioridad
+
                 # Ensure that we're adding SLA duration to the ticket's creation date
                 expected_closure_date = creation_date + timedelta(hours=sla_duration_hours)
                 
@@ -161,10 +185,11 @@ class DetalleUsuarioTicket(models.Model):
         unique_together = ('ticket', 'usuario', 'relacion_ticket')
 
 class Costo(models.Model):
-    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name='costos')
     presupuesto_ti = models.ForeignKey('PresupuestoTI', on_delete=models.CASCADE, related_name='costos')
+    ticket = models.OneToOneField('Ticket', on_delete=models.CASCADE, related_name='costos')
     monto = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
-    calculo_monto = models.DecimalField(max_digits=10, decimal_places=2, default=1, null=True,blank=True)
+    horas_atraso = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True,blank=True)
+    cierre = models.BooleanField(default= False, blank= True)
     monto_final = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True,blank=True)
     fecha = models.DateField(null=True, blank=True)
     class Meta:
@@ -176,3 +201,45 @@ class Costo(models.Model):
     def __str__(self):
         return f"Ticket ID {self.ticket.id} -Starting cost: {self.monto} - Final Cost: {self.monto_final}"
     #definir save or update
+    def get_ticket_cost(self):
+        """
+        Fetch the base cost from the related Ticket's Service.
+        """
+        return self.ticket.servicio.costo or Decimal("0.00")
+
+    def calculate_monto_final(self):
+        """
+        Calculate the final amount based on hours of delay and the base cost.
+        """
+        base_cost = self.get_ticket_cost()
+        delay_multiplier = max(Decimal("1.00"), Decimal("1.00") + Decimal("0.05") * self.horas_atraso)
+        return (base_cost * delay_multiplier).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    def is_ticket_closed(self):
+        """
+        Determine whether the related Ticket has a closure date.
+        """
+        cierre_fecha = self.ticket.fechaticket_set.filter(tipo_fecha='Cierre').first()
+        print(f"Checking ticket closure: {self.ticket.id}, closure found: {bool(cierre_fecha)}")
+        return cierre_fecha is not None
+
+        
+    def save(self, *args, **kwargs):
+        current_horas_atraso = self.horas_atraso
+        current_monto = self.monto
+        current_monto_final = self.monto_final
+        current_cierre = self.cierre
+        
+        # Call clean method to validate data before saving
+        self.monto = self.get_ticket_cost()
+        self.monto_final = self.calculate_monto_final()
+        self.cierre = self.is_ticket_closed()
+
+        # Only save if any field has changed
+        if (self.monto != current_monto or 
+            self.monto_final != current_monto_final or 
+            self.cierre != current_cierre or self.horas_atraso != current_horas_atraso):
+            super().save(*args, **kwargs)
+        else:
+            # Log or skip saving since there are no changes
+            logger.info(f"No changes detected for ticket {self.id}. Save skipped.")

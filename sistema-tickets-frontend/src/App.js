@@ -11,10 +11,10 @@ import ClosedTicketsList from './pages/ClosedTicketsList';
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 import { decodeToken } from './utils';
-import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import apiClient from './components/apiClient';
 import SlaRelatedData from './pages/SlaRelatedData';
+import Navbar from './components/Navbar';
 
 // Configuración de Axios
 apiClient.interceptors.response.use(
@@ -50,7 +50,6 @@ function App() {
 
   return (
     <Router>
-      
       <MainContent nombreUsuario={nombreUsuario} userRole={userRole} />
     </Router>
   );
@@ -62,7 +61,7 @@ function MainContent({ nombreUsuario, userRole }) {
 
   return (
     <div className="app-container">
-      {!isLoginRoute && <Header nombreUsuario={nombreUsuario} />}
+      {!isLoginRoute && <Navbar nombreUsuario={nombreUsuario} />}
       {!isLoginRoute && <Sidebar userRole={userRole} />}
 
       <div className={`main-content ${!isLoginRoute ? 'with-sidebar' : ''}`}>
