@@ -9,6 +9,7 @@ from api.logger import logger
 
 class Categoria(models.Model):
     nom_categoria = models.CharField(max_length=255)
+    sla_horas = models.IntegerField(default=0 , null= True, blank= True)
 
     def __str__(self):
         return self.nom_categoria
@@ -58,7 +59,6 @@ class PresupuestoTI(models.Model):
         # Ensure no duplicate presupuesto for the same month
         if self.fecha_presupuesto.day != 1:
             self.fecha_presupuesto = self.fecha_presupuesto.replace(day=1)
-
         duplicate = PresupuestoTI.objects.filter(
             fecha_presupuesto__month=self.fecha_presupuesto.month,
             fecha_presupuesto__year=self.fecha_presupuesto.year
@@ -125,26 +125,30 @@ class FechaTicket(models.Model):
     def __str__(self):
         return f"Fecha {self.fecha} ({self.tipo_fecha}) para Ticket {self.ticket}"
     class Meta:
-        unique_together = ('fecha', 'ticket')
+        unique_together = ('fecha', 'ticket')   
         
     def save(self, *args, **kwargs):
         logger.debug("on:FechaTicket save - Fecha: %s, Tipo de fecha: %s", self.fecha, self.tipo_fecha)
         super().save(*args, **kwargs)
 
         # Debugging prints
-        logger.debug(f"on:FechaTicket save. Saving Ticket ID: {self.ticket.id}")
-        logger.debug(f"on:FechaTicket save. Tipo Fecha: {self.tipo_fecha} for Ticket ID: {self.ticket.id}")
-        
+        logger.debug(f"on:FechaTicket save. Saving Ticket ID: {self.ticket.id} Tipo Fecha: {self.tipo_fecha}")
         if self.tipo_fecha == 'Creacion':
             # Fetch the creation date from FechaTicket (tipo_fecha='Creacion')
-            creation_date_obj = FechaTicket.objects.filter(ticket=self.ticket, tipo_fecha='Creacion').first()
             
-            if creation_date_obj:
-                creation_date = creation_date_obj.fecha
+            creacion_ticket = FechaTicket.objects.filter(ticket=self.ticket, tipo_fecha='Creacion').first()
+            
+            if creacion_ticket:
+                creation_date = creacion_ticket.fecha
                 logger.debug(f"on:FechaTicket save. Creation Date: {creation_date}")  # Use the 'fecha' field from FechaTicket for creation date
                 
-                sla_duration_hours = 48  # actualizar  para que revise ticket.prioridad
-
+                if self.ticket.categoria:
+                    sla_duration_hours = self.ticket.categoria.sla_horas
+                    logger.info(f"SLA for the ticket (ID: {self.ticket.id}) is {sla_duration_hours} hours.")
+                else:
+                    sla_duration_hours = 42 # en caso de error entonces se define como duracion de sla de 2 dias 
+                    logger.info("Ticket or category not found. Defaulting SLA duration to 0 hours.")
+                    return 0
                 # Ensure that we're adding SLA duration to the ticket's creation date
                 expected_closure_date = creation_date + timedelta(hours=sla_duration_hours)
                 
@@ -212,7 +216,7 @@ class Costo(models.Model):
         Calculate the final amount based on hours of delay and the base cost.
         """
         base_cost = self.get_ticket_cost()
-        delay_multiplier = max(Decimal("1.00"), Decimal("1.00") + Decimal("0.05") * self.horas_atraso)
+        delay_multiplier = max(Decimal("1.00"), Decimal("1.00") + (Decimal("0.05") * self.horas_atraso))
         return (base_cost * delay_multiplier).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     def is_ticket_closed(self):
@@ -220,26 +224,16 @@ class Costo(models.Model):
         Determine whether the related Ticket has a closure date.
         """
         cierre_fecha = self.ticket.fechaticket_set.filter(tipo_fecha='Cierre').first()
-        print(f"Checking ticket closure: {self.ticket.id}, closure found: {bool(cierre_fecha)}")
+        logger.debug(f"Checking ticket closure: {self.ticket.id}, closure found: {bool(cierre_fecha)}")
         return cierre_fecha is not None
 
         
     def save(self, *args, **kwargs):
-        current_horas_atraso = self.horas_atraso
-        current_monto = self.monto
-        current_monto_final = self.monto_final
-        current_cierre = self.cierre
         
         # Call clean method to validate data before saving
         self.monto = self.get_ticket_cost()
         self.monto_final = self.calculate_monto_final()
         self.cierre = self.is_ticket_closed()
-
+        super().save(*args, **kwargs)
         # Only save if any field has changed
-        if (self.monto != current_monto or 
-            self.monto_final != current_monto_final or 
-            self.cierre != current_cierre or self.horas_atraso != current_horas_atraso):
-            super().save(*args, **kwargs)
-        else:
-            # Log or skip saving since there are no changes
-            logger.info(f"No changes detected for ticket {self.id}. Save skipped.")
+        

@@ -16,7 +16,7 @@ class CargoSerializer(serializers.ModelSerializer):
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model= Categoria
-        fields = ['id','nom_categoria']
+        fields = ['id','nom_categoria','sla_horas']
 class EstadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Estado

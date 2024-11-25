@@ -2,6 +2,20 @@
 import React from 'react';
 import logo from '../imagenes/Puma-logo-1.png'; // Asegúrate de que la ruta sea correcta
 
+
+function removeToken() {
+  // Check if the token exists in local storage
+
+  if (localStorage.getItem('token')) {
+      console.log(localStorage.getItem('token'))
+      localStorage.removeItem('token'); // Remove the token
+      console.log('Token successfully removed from local storage.');
+      window.location.href = '/login';
+  } else {
+      console.log('No token found in local storage.');
+  }
+}
+
 const Navbar = ({ nombreUsuario }) => (
   <header className="navbar">
     {/* Logo Section */}
@@ -21,6 +35,7 @@ const Navbar = ({ nombreUsuario }) => (
       <span className="navbar-username">{nombreUsuario}</span>
       <div className="navbar-avatar">CP</div>
     </div>
+    <button onClick={removeToken}className="logout-button" >cerrar session</button>
   </header>
 );
 

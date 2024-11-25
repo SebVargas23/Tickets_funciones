@@ -266,7 +266,7 @@ class sla_presupuestoView(generics.ListAPIView):
         ).select_related('ticket').order_by('-horas_atraso')[:10]
         worst_tickets_data = []
         if not costos_filtered:
-            worst_tickets_data = [{"message": "No open tickets found for the selected period."}]
+            worst_tickets_data = []
         else:
             for costo in costos_filtered:
                 ticket = costo.ticket
@@ -274,13 +274,13 @@ class sla_presupuestoView(generics.ListAPIView):
                 ticket_data = {
                     "id": ticket.id,
                     "title": ticket.titulo,
-                    "sla_status": ticket.sla_status,
+                    "sla_duracion": ticket.categoria.sla_horas,
                     "horas_atraso": costo.horas_atraso,
                     "monto":costo.monto,
                     "monto_final": costo.monto_final,
                     "dates": [
                         {
-                            "date": fecha.fecha,
+                            "date": fecha.fecha.strftime("%Y-%m-%d"),
                             "type": fecha.tipo_fecha
                         } for fecha in ticket.fechaticket_set.all()
                     ]

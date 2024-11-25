@@ -23,6 +23,9 @@ const SlaRelatedData = () => {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         setData(response.data);
+        console.log('Data:', response.data);
+        console.log('Worst Tickets:', response.data?.worst_tickets);
+        console.log(response.data?.worst_tickets); 
       } catch (error) {
         console.error("Error fetching data:", error);
         setError('Error al cargar los datos.');
@@ -36,26 +39,21 @@ const SlaRelatedData = () => {
     return (monto * ( 1 + ( 0.05 * horasAtraso ))).toFixed(2);
   };
   const getResumenMonto = (amount) => {
-    if (amount >= 1000000) {
-      return `${(amount / 1000000).toFixed(2)}M`;
-    } else if (amount >= 1000) {
-        return `${(amount / 1000).toFixed(2)}K`;
+    const absAmount = Math.abs(amount); // Get the absolute value of the amount
+    let formattedAmount;
+  
+    if (absAmount >= 1000000) {
+      formattedAmount = `${(absAmount / 1000000).toFixed(2)}M`;
+    } else if (absAmount >= 1000) {
+      formattedAmount = `${(absAmount / 1000).toFixed(2)}K`;
     } else {
-        return `${amount}`;
+      formattedAmount = `${absAmount}`;
     }
+  
+    // Add the negative sign back if the original amount was negative
+    return amount < 0 ? `-${formattedAmount}` : formattedAmount;
   };
-  const getSlaCss = (sla_status) =>{
-    if (sla_status === "Atrasado"){
-      return 1
-    }
-    else if (sla_status === "En riesgo"){
-      return 2
-    }
-    else{
-      return 3
-    }
-
-  }
+  //const getSlaCss = (sla_status) =>{if(sla_status === "Atrasado"){return 1}else if(sla_status === "En riesgo"){return 2}else{return 3}}
   const handleTicketClick = (Id) => {
     // Redirect to the edit ticket page
     navigate(`/tickets/edit/${Id}`);
@@ -90,7 +88,7 @@ const SlaRelatedData = () => {
             <tr>
               <th>ID</th>
               <th>Titulo Ticket</th>
-              <th>Status SLA</th>
+              <th>Duracion SLA</th>
               <th>Costo de Ticket original</th>
               <th>fecha de Cierre Esperado</th>
               <th>Horas de atraso</th>
@@ -98,19 +96,31 @@ const SlaRelatedData = () => {
             </tr>
           </thead>
           <tbody>
-            {data.worst_tickets.map((ticket) => (
-              <tr key={ticket.ticket_id} onClick={() => handleTicketClick(ticket.id)} style={{ cursor: 'pointer' }}>
+          {Array.isArray(data?.worst_tickets) && data.worst_tickets.length > 0 ? (
+            // If worst_tickets contains ticket data
+            data.worst_tickets.map((ticket, index) => (
+              <tr key={ticket.ticket_id || index} onClick={() => handleTicketClick(ticket.id)} style={{ cursor: 'pointer' }}>
                 <td>{ticket.id}</td>
                 <td>{ticket.title}</td>
-                <td><span className={`priority-badge priority-${getSlaCss(ticket.sla_status)}`}>
-                  {ticket.sla_status}
-                </span></td>
-                <td>${getResumenMonto(ticket.monto)}</td>
-                <td>{ticket.dates.find(date => date.type === 'cierre_esperado')?.date}</td>
-                <td>{ticket.horas_atraso}hrs</td>
-                <td>${getResumenMonto(calcMonto_final(ticket.monto, ticket.horas_atraso))}</td>
+                <td>{ticket.sla_duracion} hrs</td>
+                <td>${getResumenMonto(ticket.monto)} clp</td>
+                <td>
+                  {Array.isArray(ticket.dates)
+                    ? ticket.dates.find(date => date.type === 'cierre_esperado')?.date
+                    : 'N/A'}
+                </td>
+                <td>{ticket.horas_atraso} hrs</td>
+                <td>${getResumenMonto(calcMonto_final(ticket.monto, ticket.horas_atraso))} clp</td>
               </tr>
-            ))}
+            ))
+          ) : (
+            // Fallback for when worst_tickets is empty or undefined
+            <tr key="no-data">
+              <td colSpan="7" style={{ textAlign: 'center' }}>
+                No se han encontrado tickets abiertos actualmente, enhorabuena.
+              </td>
+            </tr>
+          )}
           </tbody>
         </table>
       </section>

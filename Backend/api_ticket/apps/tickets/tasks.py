@@ -137,18 +137,23 @@ def definir_costo(ticket_id=None):
 
         for ticket in tickets:
             try:
+                fecha_costo = timezone.now()
                 costo_instance = getattr(ticket, 'costos', None)
+                print("revisando instancia de costo para ticket :",ticket.id )
                 if costo_instance:
                     logger.info(f"Updating existing Costo instance: {costo_instance}")
                     costo_instance.save()
                 else:
                     #if there is no costo instance then set lookup date as timezone.now()
-                    fecha_costo = timezone.now().replace(day=1)
+                    
                     logger.info(f"on: definir_costo. Current year and month: {timezone.now().strftime('%Y/%m')}")
                    
                     #after getting the look up date get or create a presupuesto ti object
+                    print("definiendo presupuesto como ",fecha_costo)
                     presupuesto_ti, created = PresupuestoTI.objects.get_or_create(
-                        fecha_presupuesto=fecha_costo
+                        fecha_presupuesto__month=fecha_costo.month,
+                        fecha_presupuesto__year=fecha_costo.year,
+                        defaults={'fecha_presupuesto': fecha_costo.replace(day=1)}
                     )
                     if created:
                         # If the object was created, log that the record was created
@@ -187,8 +192,11 @@ def calcular_presupuesto_gastado(date):
         logger.info(f"on: calcular_presupuesto_gastado. Month standardized to {fecha_update.strftime('%Y-%m')}.")
 
         # Get or create the corresponding 'PresupuestoTI' for the given month
+        print("buscando presupuesto o creando uno nuevo")
         presupuesto_ti, created = PresupuestoTI.objects.get_or_create(
-            fecha_presupuesto=fecha_update
+            fecha_presupuesto__year=fecha_update.year,
+            fecha_presupuesto__month=fecha_update.month,
+            defaults={'fecha_presupuesto': fecha_update}
         )
 
         if created:
