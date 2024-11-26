@@ -444,6 +444,25 @@ h2 {
   font-weight: bold;
 }
 
+.navbar-logout-button {
+  margin-left: 15px; /* Space between the avatar and button */
+  padding: 8px 12px; /* Adjust padding for smaller size */
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #118064;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  width: auto; /* Ensure the width is based on the content */
+  max-width: 150px; /* Set a reasonable max width */
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+.navbar-logout-button:hover {
+  background-color: #118064; /* Highlighted background */
+  color: #ffffff; /* Highlighted text */
+}
 
 
 
@@ -1199,17 +1218,4 @@ h2 {
     padding: 15px; /* Reduce el padding en pantallas más pequeñas */
     width: 100%;
   }
-}
-.logout-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background-color: #f5f5f5;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.logout-button:hover {
-  background-color: #ddd;
 }
