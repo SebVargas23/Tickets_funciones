@@ -1,12 +1,12 @@
 from datetime import datetime
 from rest_framework import generics,status
-from .models import Categoria, Estado, Prioridad, Servicio, Ticket, DetalleUsuarioTicket, FechaTicket,Usuario, Costo, PresupuestoTI
+from .models import Categoria, Estado, Prioridad, Servicio, Ticket, DetalleUsuarioTicket, FechaTicket,Usuario, Costo, PresupuestoTI, EvaluacionTicket
 from apps.autenticacion.models import Departamento, Cargo
 from apps.autenticacion.serializers import UsuarioSerializer
 from .serializers import (
     DepartamentoSerializer, CargoSerializer, CategoriaSerializer, 
     EstadoSerializer, PresupuestoTISerializer, PrioridadSerializer, ServicioSerializer, 
-    TicketSerializer, DetalleUsuarioTicketSerializer, FechaTicketSerializer,
+    TicketSerializer, DetalleUsuarioTicketSerializer, FechaTicketSerializer, EvaluacionTicketSerializer
 )
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -294,6 +294,7 @@ class sla_presupuestoView(generics.ListAPIView):
 
         return Response(response_data, status=status.HTTP_200_OK)
 
+
     
 
 @api_view(['GET'])
@@ -369,3 +370,46 @@ def list_usuarios(request):
     usuarios = Usuario.objects.all()
     serializer = UsuarioSerializer(usuarios, many=True)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+def create_or_update_evaluacion(request, ticket_id):
+    try:
+        print(f"ID del Ticket: {ticket_id}")  # Log del ID
+        print("Datos recibidos del cliente:", request.data)  # Log de los datos recibidos
+
+        # Obtener el ticket relacionado
+        ticket = Ticket.objects.get(id=ticket_id)
+        print(f"Ticket encontrado: {ticket}")
+
+        # Validar que 'nota' esté presente
+        nota = request.data.get('nota')
+        if nota is None:
+            return Response({"error": "El campo 'nota' es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Obtener o crear la evaluación
+        evaluacion, created = EvaluacionTicket.objects.get_or_create(
+            ticket=ticket,
+            defaults={'nota': nota, 'feedback': request.data.get('feedback', '')}
+        )
+        print(f"Evaluación {'creada' if created else 'actualizada'}: {evaluacion}")
+
+        # Actualizar evaluación si ya existe
+        if not created:
+            serializer = EvaluacionTicketSerializer(evaluacion, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            print("Errores de validación del serializador:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Si se creó, retorna la evaluación creada
+        serializer = EvaluacionTicketSerializer(evaluacion)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    except Ticket.DoesNotExist:
+        print("El ticket no existe.")
+        return Response({"error": "Ticket no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print("Error inesperado:", str(e))
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

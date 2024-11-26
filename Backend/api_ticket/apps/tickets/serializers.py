@@ -45,7 +45,7 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'titulo', 'comentario', 'categoria',
             'prioridad', 'servicio', 'estado', 'user',
-            'fecha_creacion','fecha_cierre_esperado', 'fecha_cierre','sla_status'
+            'fecha_creacion','fecha_cierre_esperado', 'fecha_cierre','sla_status', 'resolucion','evaluacion'
         ]
 
     def get_fecha_creacion(self, obj):
@@ -122,3 +122,10 @@ class CostoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Costo
         fields = ['id', 'ticket', 'presupuesto_ti', 'monto', 'horas_atraso','cierre' , 'monto_final', 'fecha']
+
+class EvaluacionTicketSerializer(serializers.ModelSerializer):
+    ticket = serializers.PrimaryKeyRelatedField(read_only=True)  # Solo lectura
+
+    class Meta:
+        model = EvaluacionTicket
+        fields = ['ticket', 'nota', 'feedback']

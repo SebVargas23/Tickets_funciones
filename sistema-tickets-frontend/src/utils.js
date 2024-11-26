@@ -14,6 +14,7 @@ export const decodeToken = (token) => {
     );
 
     const decodedToken = JSON.parse(jsonPayload);
+    console.log(decodedToken.role)
     console.log(jsonPayload)
     return {
       ...decodedToken,

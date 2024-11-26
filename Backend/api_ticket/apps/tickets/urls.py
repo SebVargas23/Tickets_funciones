@@ -11,7 +11,7 @@ from .views import (
     DetalleUsuarioTicketListCreateView, DetalleUsuarioTicketDetailView,
     FechaTicketListCreateView, FechaTicketDetailView,ClosedTicketListView,
     sla_presupuestoView,
-    dashboard_stats,list_usuarios
+    dashboard_stats,list_usuarios, create_or_update_evaluacion
 )
 
 from rest_framework_simplejwt.views import (
@@ -76,6 +76,8 @@ urlpatterns = [
     path('sla-presupuestos/',sla_presupuestoView.as_view(), name='sla-presupuesto'),
 
     path('usuarios/', list_usuarios, name='list_usuarios'),
+
+    path('tickets/<int:ticket_id>/feedback/', create_or_update_evaluacion, name='create_or_update_evaluacion'),
 ]
 
 DEBUG = True
