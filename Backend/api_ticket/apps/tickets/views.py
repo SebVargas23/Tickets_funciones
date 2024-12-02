@@ -11,7 +11,8 @@ from .serializers import (
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
-
+from django.utils.timezone import now, localdate, localtime
+import math
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from .models import Usuario, Ticket
@@ -110,7 +111,7 @@ class TicketListCreateView(generics.ListCreateAPIView):
         FechaTicket.objects.create(
             ticket=ticket,
             tipo_fecha='Creacion',
-            fecha= timezone.now()
+            fecha= localtime()
             )
         logger.info("on: perform_create. FechaTicket entry created for ticket creation date.")
         # Access the 'servicio' related field from the ticket
@@ -191,12 +192,12 @@ class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
         if estado_obj.nom_estado == "Cerrado":
             fecha_cierre, created = FechaTicket.objects.get_or_create(
                 ticket=instance, tipo_fecha='Cierre',
-                defaults={'fecha': timezone.now()}
+                defaults={'fecha': localtime()}
             )
             if created:
                 logger.info(f"FechaTicket entry for cierre created: {fecha_cierre.fecha}")
             else:
-                fecha_cierre.fecha = timezone.now()
+                fecha_cierre.fecha = localtime()
                 fecha_cierre.save()
                 logger.info(f"FechaTicket entry for cierre updated to: {fecha_cierre.fecha}")
 
@@ -231,8 +232,8 @@ class sla_presupuestoView(generics.ListAPIView):
     def get(self, request=None):
         # Get the month and year from query parameters or default to the current month and year
         update_sla_status()
-        fecha_request_str = request.query_params.get("date")  # Expecting a date in "YYYY-MM-DD" format
-
+        fecha_request_str = request.data.get("fecha", None) # Expecting a date in "YYYY-MM-DD" format
+        print(" fecha recivida: ", fecha_request_str)
         if fecha_request_str:
             # Step 2: Try to parse the provided date if it exists
             try:
@@ -242,7 +243,9 @@ class sla_presupuestoView(generics.ListAPIView):
                 return Response({"error": "formato invalido de fecha, porfavor introducir fecha en el formato : 'YYYY-MM-DD'."}, status=400)
         else:
             # Default to the current date if 'date' is not provided
-            fecha_request = timezone.now().date()  # Get the current date (ignoring the time part)
+            fecha_request = localdate()
+            print("localdate:", localdate() )  # Current time in UTC
+            print("localtime:", localtime() )  # Get the current date (ignoring the time part)
         
         # Step 3: Extract month and year from the date
         month = fecha_request.month
@@ -270,12 +273,21 @@ class sla_presupuestoView(generics.ListAPIView):
         else:
             for costo in costos_filtered:
                 ticket = costo.ticket
+                creation_date = ticket.fechaticket_set.filter(tipo_fecha="Creacion").first()  # Adjust the filter logic
+                if creation_date:
+                    horas_abierto = (localtime() - creation_date.fecha).total_seconds() / 3600
+                    print("horas que el ticket ha permanecido abierto: ", horas_abierto)
+                else:
+                    horas_abierto = None
+                    print("no se ha encontrado una fecha de creacion para el ticket", creation_date)
                 # Collecting ticket data including title, sla_status, and cost
                 ticket_data = {
                     "id": ticket.id,
                     "title": ticket.titulo,
+                    "categoria": ticket.categoria.nom_categoria,
                     "sla_duracion": ticket.categoria.sla_horas,
                     "horas_atraso": costo.horas_atraso,
+                    "horas_abierto": math.ceil(horas_abierto) if horas_abierto else "error",
                     "monto":costo.monto,
                     "monto_final": costo.monto_final,
                     "dates": [

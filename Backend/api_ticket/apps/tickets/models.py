@@ -57,49 +57,64 @@ class PresupuestoTI(models.Model):
         return f"{self.fecha_presupuesto.strftime('%Y-%m')} - Spent: {self.presupuesto_gastado} / Monthly Budget: {self.presupuesto_mensual}"
 
     def clean(self):
-        # Ensure no duplicate presupuesto for the same month
+        # Normalize the date to the first day of the month
         if self.fecha_presupuesto.day != 1:
             self.fecha_presupuesto = self.fecha_presupuesto.replace(day=1)
+        
+        # Check for duplicate presupuesto in the same month
         duplicate = PresupuestoTI.objects.filter(
             fecha_presupuesto__month=self.fecha_presupuesto.month,
             fecha_presupuesto__year=self.fecha_presupuesto.year
-        ).exclude(pk=self.pk)  # Exclude self to allow updates on the current record
+        ).exclude(pk=self.pk)  # Exclude current instance for updates
 
         if duplicate.exists():
-            raise ValidationError(f"Ya existe un presupuesto para el mes: {self.fecha_presupuesto.strftime('%Y-%m')}. Solo se permite 1 presupuesto por mes.")
-        
+            raise ValidationError(
+                f"Ya existe un presupuesto para el mes: {self.fecha_presupuesto.strftime('%Y-%m')}."
+            )
+    
     
     def save(self, *args, **kwargs):
-        # Call clean method to validate data before saving
-        self.clean()
-        
-        # Recalculate the current 'presupuesto_gastado'
-        recalculated_gastado = Decimal(self.costos.filter(cierre=True).aggregate(
-            total=Sum('monto_final')
-        )['total'] or 0)
-        print(recalculated_gastado)
-
-        # Fetch the current 'presupuesto_gastado' from the database
-        if self.pk:  # Only if this is not a new instance
-            current_gastado = Decimal(PresupuestoTI.objects.filter(pk=self.pk).values_list(
-                'presupuesto_gastado', flat=True
-            ).first() or 0)
-        else:
-            current_gastado = Decimal(0)  # New instances have no current value
-        
-        # Only update if the recalculated value differs
         try:
-            if not self.pk or recalculated_gastado != current_gastado:
+            # Validate data before saving
+            self.clean()
+
+            # Only calculate 'recalculated_gastado' if instance already has a primary key
+            recalculated_gastado = Decimal(0)
+            if self.pk:
+                recalculated_gastado = Decimal(self.costos.filter(cierre=True).aggregate(
+                    total=Sum('monto_final')
+                )['total'] or 0)
+
+            if not self.pk:  # New instance
+                logger.info(f"Creating new presupuesto: {self}")
                 self.presupuesto_gastado = recalculated_gastado
                 self.presupuesto_restante = self.presupuesto_mensual - self.presupuesto_gastado
                 self.over_budget = self.presupuesto_gastado > self.presupuesto_mensual
-                super().save(*args, **kwargs)  # Save only if there's a change
-            else:
-                # Log or skip saving since there are no changes
-                logger.info(f"No changes detected for 'presupuesto_gastado'. Save skipped for {self.fecha_presupuesto.strftime('%Y-%m')}.")
+                super().save(*args, **kwargs)
+            else:  # Updating existing instance
+                """current_gastado = Decimal(PresupuestoTI.objects.filter(pk=self.pk).values_list(
+                    'presupuesto_gastado', flat=True
+                ).first() or 0)
+                current_restante = Decimal(PresupuestoTI.objects.filter(pk=self.pk).values_list(
+                    'presupuesto_restante', flat=True
+                ).first() or 0)"""
+
+                # Only save if recalculated values differ
+                #if recalculated_gastado != current_gastado or current_restante != self.presupuesto_restante:
+                self.presupuesto_gastado = recalculated_gastado
+                self.presupuesto_restante = self.presupuesto_mensual - self.presupuesto_gastado
+                self.over_budget = self.presupuesto_gastado > self.presupuesto_mensual
+                logger.info(f"Updating presupuesto: {self}")
+                super().save(*args, **kwargs)
+                #else:
+                #    logger.info(f"No changes detected for presupuesto {self.pk}. Save skipped.")
+        except ValidationError as e:
+            logger.error(f"ValidationError while saving PresupuestoTI: {str(e)}")
+            raise
         except Exception as e:
-            logger.error(f"unexpected error on saving presupuesto object {self.id}, {str(e)}")
-            
+            logger.error(f"Unexpected error while saving PresupuestoTI: {str(e)}")
+            raise
+
 
 class Ticket(models.Model):
     titulo = models.CharField(max_length=255)

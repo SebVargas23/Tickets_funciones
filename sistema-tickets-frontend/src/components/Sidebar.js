@@ -2,7 +2,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+
 const Sidebar = ({ userRole }) => {
+  console.log("rol usuario: ", userRole)
   return (
     <div className="sidebar">
       <ul>

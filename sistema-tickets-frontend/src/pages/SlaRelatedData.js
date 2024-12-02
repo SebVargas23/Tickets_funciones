@@ -22,13 +22,15 @@ const SlaRelatedData = () => {
         const response = await apiClient.get('sla-presupuestos/', {
           headers: { 'Authorization': `Bearer ${token}` },
         });
-        setData(response.data);
-        console.log('Data:', response.data);
-        console.log('Worst Tickets:', response.data?.worst_tickets);
-        console.log(response.data?.worst_tickets); 
+        if (response.data?.error) {
+          setError(response.data.error);  // Set the error message from the response
+        } else {
+          setData(response.data);
+          console.log('Data:', response.data);
+          console.log('Worst Tickets:', response.data?.worst_tickets);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError('Error al cargar los datos.');
       }
     };
 
@@ -60,11 +62,49 @@ const SlaRelatedData = () => {
   };
 
   if (error) {
-    return <div>{error}</div>;  // Display error message if there's an error
+    return <div style={{ color: "black" }}>{error}</div>; // Display error message if there's an error
   }
 
   if (!data) {
-    return <div>Loading...</div>;
+    return (
+      <div className="sla-related-data">
+        <section className="budget-overview">
+          <h1>Resumen del presupuesto de este mes</h1>
+          <div className="budget-details">
+            <p>No se encontro informacion en este mes</p>
+            <p><strong>Presupuesto Mensual:</strong></p>
+            <p><strong>Presupuesto Gastado:</strong></p>
+            <p><strong>Fecha del Presupuesto:</strong></p>
+            <p><strong>Presupuesto Restante:</strong></p>
+            <p><strong>presupuesto exedido:</strong></p>
+          </div>
+        </section>
+        <section>
+          <h2>tickets por horas de atraso</h2>
+          <table className="tickets-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Titulo Ticket</th>
+                <th>Duracion SLA</th>
+                <th>Categoria del Ticket</th>
+                <th>fecha de apertura</th>
+                <th>fecha de Cierre Esperado</th>
+                <th>Horas abierto</th>
+                <th>Costo Estimado Del ticket</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr key="no-data">
+                    <td colSpan="8" style={{ textAlign: 'center' }}>
+                      No se han encontrado tickets abiertos en este mes, enhorabuena.
+                    </td>
+                  </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+    );
   }
 
 
@@ -88,10 +128,11 @@ const SlaRelatedData = () => {
             <tr>
               <th>ID</th>
               <th>Titulo Ticket</th>
+              <th>Categoria del Ticket</th>
               <th>Duracion SLA</th>
-              <th>Costo de Ticket original</th>
-              <th>fecha de Cierre Esperado</th>
-              <th>Horas de atraso</th>
+              <th>Fecha de apertura</th>
+              <th>Fecha de Cierre Esperado</th>
+              <th>Horas abierto</th>
               <th>Costo Estimado Del ticket</th>
             </tr>
           </thead>
@@ -102,22 +143,27 @@ const SlaRelatedData = () => {
               <tr key={ticket.ticket_id || index} onClick={() => handleTicketClick(ticket.id)} style={{ cursor: 'pointer' }}>
                 <td>{ticket.id}</td>
                 <td>{ticket.title}</td>
+                <td>{ticket.categoria}</td>
                 <td>{ticket.sla_duracion} hrs</td>
-                <td>${getResumenMonto(ticket.monto)} clp</td>
+                <td>
+                  {Array.isArray(ticket.dates)
+                    ? ticket.dates.find(date => date.type === 'Creacion')?.date
+                    : 'N/A'}
+                </td>
                 <td>
                   {Array.isArray(ticket.dates)
                     ? ticket.dates.find(date => date.type === 'cierre_esperado')?.date
                     : 'N/A'}
                 </td>
-                <td>{ticket.horas_atraso} hrs</td>
+                <td>{ticket.horas_abierto} hrs</td>
                 <td>${getResumenMonto(calcMonto_final(ticket.monto, ticket.horas_atraso))} clp</td>
               </tr>
             ))
           ) : (
             // Fallback for when worst_tickets is empty or undefined
             <tr key="no-data">
-              <td colSpan="7" style={{ textAlign: 'center' }}>
-                No se han encontrado tickets abiertos actualmente, enhorabuena.
+              <td colSpan="8" style={{ textAlign: 'center' }}>
+                No se han encontrado tickets abiertos en este mes, enhorabuena.
               </td>
             </tr>
           )}

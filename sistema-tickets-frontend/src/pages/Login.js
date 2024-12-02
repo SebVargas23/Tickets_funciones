@@ -3,14 +3,18 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 import apiClient from '../components/apiClient';
+import { useUser } from '../components/UserContext';
+import { decodeToken } from '../utils';
 
 const Login = () => {
+  const { setNombreUsuario, setUserRole } = useUser()
   const [formData, setFormData] = useState({
     correo: '',
     password: ''
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,10 +35,16 @@ const Login = () => {
       // Almacenar el token en localStorage
       localStorage.setItem('token', response.data.access);
 
+      const decodedToken = decodeToken(response.data.access);
+      
+      // Actualizar el UserContext con los valores del token
+      setNombreUsuario(decodedToken.nom_usuario);
+      setUserRole(decodedToken.role)
       // Redirigir al dashboard en lugar de a tickets
       navigate('/dashboard');
     } catch (error) {
       // Manejo de errores
+      console.log(error)
       setError('Credenciales incorrectas. Intenta de nuevo.');
     }
   };

@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
 import RegistroUsuario from './pages/RegistroUsuario';
@@ -10,11 +10,11 @@ import EditTicket from './pages/EditTicket';
 import ClosedTicketsList from './pages/ClosedTicketsList';
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
-import { decodeToken } from './utils';
 import Sidebar from './components/Sidebar';
 import apiClient from './components/apiClient';
 import SlaRelatedData from './pages/SlaRelatedData';
 import Navbar from './components/Navbar';
+import { useUser, UserProvider } from './components/UserContext';
 
 // Configuración de Axios
 apiClient.interceptors.response.use(
@@ -31,6 +31,50 @@ apiClient.interceptors.response.use(
   }
 );
 
+function App() {
+  return (
+    <UserProvider>
+      <Router>
+        <MainContent />
+      </Router>
+    </UserProvider>
+  );
+}
+
+function MainContent() {
+  const { nombreUsuario, userRole, loading } = useUser(); // Access context values
+  const location = useLocation();
+  const isLoginRoute = location.pathname === '/login';
+  
+  if (loading) {
+    return <div>Loading...</div>; // Mostramos un mensaje mientras cargan los datos
+  }
+  
+  return (
+    <div className="app-container">
+      {!isLoginRoute && <Navbar nombreUsuario={nombreUsuario} />}
+      {!isLoginRoute && <Sidebar userRole={userRole} />}
+
+      <div className="main-content">
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<PrivateRoute><RegistroUsuario /></PrivateRoute>} />
+          <Route path="/dashboard" element={<PrivateRoute requiredRole="admin"><Dashboard /></PrivateRoute>} />
+          <Route path="/tickets" element={<PrivateRoute><Tickets /></PrivateRoute>} />
+          <Route path="/tickets-list" element={<PrivateRoute><TicketsList /></PrivateRoute>} />
+          <Route path="/tickets/edit/:id" element={<PrivateRoute><EditTicket userRole={userRole}/></PrivateRoute>} />
+          <Route path="/tickets-cerrados" element={<PrivateRoute requiredRole="admin"><ClosedTicketsList /></PrivateRoute>} />
+          <Route path="/sla-data" element={<PrivateRoute requiredRole="admin"><SlaRelatedData /></PrivateRoute>} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </div>
+    </div>
+  );
+}
+
+
+/*
 function App() {
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [userRole, setUserRole] = useState('');
@@ -72,7 +116,7 @@ function MainContent({ nombreUsuario, userRole }) {
           <Route path="/dashboard" element={<PrivateRoute requiredRole="admin"><Dashboard /></PrivateRoute>} />
           <Route path="/tickets" element={<PrivateRoute><Tickets /></PrivateRoute>} />
           <Route path="/tickets-list" element={<PrivateRoute><TicketsList /></PrivateRoute>} />
-          <Route path="/tickets/edit/:id" element={<PrivateRoute requiredRole="admin"><EditTicket /></PrivateRoute>} />
+          <Route path="/tickets/edit/:id" element={<PrivateRoute userRole={userRole} requiredRole="admin"><EditTicket /></PrivateRoute>} />
           <Route path="/tickets-cerrados" element={<PrivateRoute requiredRole="admin"><ClosedTicketsList /></PrivateRoute>} />
           <Route path="/sla-data" element={<PrivateRoute requiredRole="admin"><SlaRelatedData /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
@@ -81,5 +125,5 @@ function MainContent({ nombreUsuario, userRole }) {
     </div>
   );
 }
-
+*/
 export default App;

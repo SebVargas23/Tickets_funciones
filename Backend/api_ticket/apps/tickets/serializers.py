@@ -45,7 +45,7 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'titulo', 'comentario', 'categoria',
             'prioridad', 'servicio', 'estado', 'user',
-            'fecha_creacion','fecha_cierre_esperado', 'fecha_cierre','sla_status', 'resolucion','evaluacion'
+            'fecha_creacion','fecha_cierre_esperado', 'fecha_cierre','sla_status', 'resolucion'
         ]
 
     def get_fecha_creacion(self, obj):

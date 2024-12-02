@@ -16,7 +16,9 @@ function removeToken() {
   }
 }
 
-const Navbar = ({ nombreUsuario }) => (
+const Navbar = ({ nombreUsuario }) => {
+  console.log("usuario :", nombreUsuario)
+  return (
   <header className="navbar">
     {/* Logo Section */}
     <div className="navbar-logo">
@@ -37,8 +39,9 @@ const Navbar = ({ nombreUsuario }) => (
     </div>
     <button onClick={removeToken} 
     className="navbar-logout-button"
-    >Cerrar session</button>
+    >Cerrar sesion</button>
   </header>
-);
+  )
+};
 
 export default Navbar;

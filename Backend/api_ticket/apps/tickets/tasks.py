@@ -1,3 +1,4 @@
+from django.utils.timezone import now, localdate, localtime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from datetime import timedelta
@@ -78,7 +79,7 @@ def update_sla_status_for_open_ticket(ticket):
     """
     Updates SLA status for open tickets only (no cost calculations).
     """
-    now = timezone.now()
+    now = localtime()
     fecha_esperada = ticket.fechaticket_set.filter(tipo_fecha='cierre_esperado').first()
     
     if not fecha_esperada:
@@ -137,7 +138,8 @@ def definir_costo(ticket_id=None):
 
         for ticket in tickets:
             try:
-                fecha_costo = timezone.now()
+                fecha_costo = localtime()
+                print("fecha del costo", fecha_costo)
                 costo_instance = getattr(ticket, 'costos', None)
                 print("revisando instancia de costo para ticket :",ticket.id )
                 if costo_instance:
@@ -146,17 +148,19 @@ def definir_costo(ticket_id=None):
                 else:
                     #if there is no costo instance then set lookup date as timezone.now()
                     
-                    logger.info(f"on: definir_costo. Current year and month: {timezone.now().strftime('%Y/%m')}")
+                    logger.info(f"on: definir_costo. Current year and month: {localtime().strftime('%Y/%m')}")
                    
                     #after getting the look up date get or create a presupuesto ti object
                     print("definiendo presupuesto como ",fecha_costo)
                     presupuesto_ti, created = PresupuestoTI.objects.get_or_create(
                         fecha_presupuesto__month=fecha_costo.month,
                         fecha_presupuesto__year=fecha_costo.year,
-                        defaults={'fecha_presupuesto': fecha_costo.replace(day=1)}
+                        defaults={'fecha_presupuesto': fecha_costo}
                     )
+                    print("! punto de control post presupuesto_ti")
                     if created:
                         # If the object was created, log that the record was created
+                        presupuesto_ti.save()
                         logger.info(f"on: definir_costo. Created new presupuesto record for {fecha_costo.strftime('%Y/%m')}")
                     else:
                         # If the object already exists, log that the record was found
