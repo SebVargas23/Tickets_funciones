@@ -17,9 +17,7 @@ export const UserProvider = ({ children }) => {
       const decodedToken = decodeToken(token);
       if (decodedToken) {
         setNombreUsuario(decodedToken.nom_usuario);
-        console.log('Nombre de usuario:', decodedToken.nom_usuario);
-        setUserRole(decodedToken.role);
-        console.log('Rol del usuario:', decodedToken.role); 
+        setUserRole(decodedToken.role); 
       }
     }
     setLoading(false); 

@@ -96,10 +96,9 @@ const EditTicket = ({ userRole }) => {
             alert('Hubo un problema al actualizar el ticket.');
         }
     };
-
+    const estadoCerrado = estados.find((estado) => estado.nom_estado === 'Cerrado');
     const handleCloseTicket = async () => {
         const token = localStorage.getItem('token');
-        const estadoCerrado = estados.find((estado) => estado.nom_estado === 'Cerrado');
 
         if (!estadoCerrado) {
             alert('No se encontró el estado "Cerrado".');
@@ -167,6 +166,8 @@ const EditTicket = ({ userRole }) => {
             alert('Hubo un problema al enviar tu feedback.');
         }
     };
+
+
 
     return (
         <div className="ticket-section-container">
@@ -249,59 +250,63 @@ const EditTicket = ({ userRole }) => {
                     <textarea
                         name="resolucion"
                         value={ticket.resolucion || ''}
-                        readOnly={isReadOnly}
+                        disabled={isReadOnly}
                         onChange={(e) => setTicket({ ...ticket, resolucion: e.target.value })}
                     />
                 </div>
 
-                <div className="feedback-section">
-                    <h3>📝 Evaluación del Ticket</h3>
-                    <p>
-                        Calificación Guardada: 
-                        {emojis.find((e) => e.value === feedback.nota)?.label || 'No calificado'}
-                    </p>
-                    <p>Comentario Guardado: {feedback.comentario || 'Sin comentarios'}</p>
-                </div>
+                
+                {ticket.estado === estadoCerrado.id &&(
+                    <div>
+                        <div className="feedback-section">
+                            <h3>📝 Evaluación del Ticket</h3>
+                            <p>
+                                Calificación Guardada: 
+                                {emojis.find((e) => e.value === feedback.nota)?.label || 'No calificado'}
+                            </p>
+                            <p>Comentario Guardado: {feedback.comentario || 'Sin comentarios'}</p>
+                        </div>
 
-                <div className="feedback-section">
-                    <h3>📝 Actualizar Evaluación</h3>
-                    <div className="meter-bar">
-                    <div
-                        className="meter-indicator"
-                        style={{ left: updateMeterPosition(feedback.nota) }}
-                    ></div>
-                  </div>
-                    <div className="feedback-emojis">
-                        {emojis.map((emoji) => (
-                            <span
-                                key={emoji.value}
-                                className={`emoji ${feedback.nota === emoji.value ? 'selected' : ''}`}
-                                style={{ color: emoji.color }}
-                                onClick={() => setFeedback({ ...feedback, nota: emoji.value })}
-                                title={`Nota ${emoji.value}`}
+                        <div className="feedback-section">
+                            <h3>📝 Actualizar Evaluación</h3>
+                            <div className="meter-bar">
+                            <div
+                                className="meter-indicator"
+                                style={{ left: updateMeterPosition(feedback.nota) }}
+                            ></div>
+                        </div>
+                            <div className="feedback-emojis">
+                                {emojis.map((emoji) => (
+                                    <span
+                                        key={emoji.value}
+                                        className={`emoji ${feedback.nota === emoji.value ? 'selected' : ''}`}
+                                        style={{ color: emoji.color }}
+                                        onClick={() => setFeedback({ ...feedback, nota: emoji.value })}
+                                        title={`Nota ${emoji.value}`}
+                                    >
+                                        {emoji.label}
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="input-group">
+                                <label>Comentarios:</label>
+                                <textarea
+                                    name="comentario"
+                                    value={feedback.comentario}
+                                    onChange={(e) => setFeedback({ ...feedback, comentario: e.target.value })}
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                className="submit-feedback-button"
+                                onClick={handleSubmitFeedback}
+                                disabled={!feedback.nota}
                             >
-                                {emoji.label}
-                            </span>
-                        ))}
-                    </div>
-                    <div className="input-group">
-                        <label>Comentarios:</label>
-                        <textarea
-                            name="comentario"
-                            value={feedback.comentario}
-                            onChange={(e) => setFeedback({ ...feedback, comentario: e.target.value })}
-                        />
-                    </div>
-                    <button
-                        type="button"
-                        className="submit-feedback-button"
-                        onClick={handleSubmitFeedback}
-                        disabled={!feedback.nota}
-                    >
-                        Enviar Feedback
-                    </button>
+                                Enviar Feedback
+                            </button>
+                        </div>
                 </div>
-
+                )}
                 <div className="button-group admin-buttons">
                     {userRole === 'admin' && (
                         <>

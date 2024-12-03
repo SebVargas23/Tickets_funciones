@@ -4,20 +4,18 @@ import logo from '../imagenes/Puma-logo-1.png'; // Asegúrate de que la ruta sea
 
 
 function removeToken() {
-  // Check if the token exists in local storage
+  // revisar si el token esta en memoria local
 
   if (localStorage.getItem('token')) {
-      console.log(localStorage.getItem('token'))
-      localStorage.removeItem('token'); // Remove the token
-      console.log('Token successfully removed from local storage.');
+      localStorage.removeItem('token'); // remueve el token 
+      console.log('Token eliminado de memoria local.');
       window.location.href = '/login';
   } else {
-      console.log('No token found in local storage.');
+      console.log('No se encontro token en memoria local.');
   }
 }
 
 const Navbar = ({ nombreUsuario }) => {
-  console.log("usuario :", nombreUsuario)
   return (
   <header className="navbar">
     {/* Logo Section */}

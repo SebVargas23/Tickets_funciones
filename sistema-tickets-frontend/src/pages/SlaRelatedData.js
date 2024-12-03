@@ -26,11 +26,9 @@ const SlaRelatedData = () => {
           setError(response.data.error);  // Set the error message from the response
         } else {
           setData(response.data);
-          console.log('Data:', response.data);
-          console.log('Worst Tickets:', response.data?.worst_tickets);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error obteniendo data:", error);
       }
     };
 
@@ -86,7 +84,7 @@ const SlaRelatedData = () => {
               <tr>
                 <th>ID</th>
                 <th>Titulo Ticket</th>
-                <th>Duracion SLA</th>
+                <th>Duración SLA</th>
                 <th>Categoria del Ticket</th>
                 <th>fecha de apertura</th>
                 <th>fecha de Cierre Esperado</th>

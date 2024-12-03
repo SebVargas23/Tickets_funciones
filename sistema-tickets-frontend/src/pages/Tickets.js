@@ -37,13 +37,11 @@ const Tickets = () => {
     // If categoriaId is NaN, set the content to null
     if (isNaN(categoriaId)) {
       setGuiaContenido(0); // Si no hay categoría, no hay contenido
-      console.log(guiaContenido)
     } else {
       setSelectedCategoryId(categoriaId);  // Update the selected category state
   
       // Busca el contenido de la guía basado en el id de la categoría
       const guia = guias.find(guia => guia.id_categoria === categoriaId);
-      console.log(e.target.value);
       setGuiaContenido(guia || 0);
       
       const relatedService = servicios.find(
@@ -94,9 +92,7 @@ const Tickets = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
-        console.log(response.data)
         setState(response.data);
-        console.log('data: ', response.data)
       } catch (error) {
         console.error(`Error al cargar los datos desde ${url}:`, error);
       }
@@ -148,15 +144,7 @@ const Tickets = () => {
     const adjustedData = {
       ...formData,
     };
-    console.log(formData.titulo,
-      formData.comentario,
-      formData.categoria,
-      formData.prioridad,
-      formData.servicio,
-      formData.estado)
-    console.log(adjustedData)
     const token = localStorage.getItem('token');
-    console.log(token)
     if (!token) {
       alert('No estás autenticado. Por favor, inicia sesión.');
       navigate('/login');
@@ -207,7 +195,7 @@ const Tickets = () => {
         'La categoría se seleccionará automáticamente según la guía que hayas leído.',
         'Si la categoría no es correcta, podrás cambiarla manualmente.',
         'Rellena los datos del formulario con una descripción clara de tu problema.',
-        'Revisa todo antes de hacer clic en "Enviar Ticket".',
+        'Revisa todo antes de hacer clic en "Crear Ticket".',
       ],
     },
     {

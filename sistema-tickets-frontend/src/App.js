@@ -64,7 +64,7 @@ function MainContent() {
           <Route path="/tickets" element={<PrivateRoute><Tickets /></PrivateRoute>} />
           <Route path="/tickets-list" element={<PrivateRoute><TicketsList /></PrivateRoute>} />
           <Route path="/tickets/edit/:id" element={<PrivateRoute><EditTicket userRole={userRole}/></PrivateRoute>} />
-          <Route path="/tickets-cerrados" element={<PrivateRoute requiredRole="admin"><ClosedTicketsList /></PrivateRoute>} />
+          <Route path="/tickets-cerrados" element={<PrivateRoute><ClosedTicketsList /></PrivateRoute>} />
           <Route path="/sla-data" element={<PrivateRoute requiredRole="admin"><SlaRelatedData /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
@@ -72,58 +72,4 @@ function MainContent() {
     </div>
   );
 }
-
-
-/*
-function App() {
-  const [nombreUsuario, setNombreUsuario] = useState('');
-  const [userRole, setUserRole] = useState('');
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decodedToken = decodeToken(token);
-      if (decodedToken) {
-        setNombreUsuario(decodedToken.nom_usuario);
-        console.log(decodedToken.nom_usuario);
-        setUserRole(decodedToken.role);
-        console.log(decodedToken.role);// Guardar el rol del usuario
-      }
-    }
-  }, []);
-  console.log(userRole)
-
-  return (
-    <Router>
-      <MainContent nombreUsuario={nombreUsuario} userRole={userRole} />
-    </Router>
-  );
-}
-
-function MainContent({ nombreUsuario, userRole }) {
-  const location = useLocation();
-  const isLoginRoute = location.pathname === '/login';
-
-  return (
-    <div className="app-container">
-      {!isLoginRoute && <Navbar nombreUsuario={nombreUsuario} />}
-      {!isLoginRoute && <Sidebar userRole={userRole} />}
-
-      <div className={`main-content ${!isLoginRoute ? 'with-sidebar' : ''}`}>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/registro" element={<PrivateRoute><RegistroUsuario /></PrivateRoute>} />
-          <Route path="/dashboard" element={<PrivateRoute requiredRole="admin"><Dashboard /></PrivateRoute>} />
-          <Route path="/tickets" element={<PrivateRoute><Tickets /></PrivateRoute>} />
-          <Route path="/tickets-list" element={<PrivateRoute><TicketsList /></PrivateRoute>} />
-          <Route path="/tickets/edit/:id" element={<PrivateRoute userRole={userRole} requiredRole="admin"><EditTicket /></PrivateRoute>} />
-          <Route path="/tickets-cerrados" element={<PrivateRoute requiredRole="admin"><ClosedTicketsList /></PrivateRoute>} />
-          <Route path="/sla-data" element={<PrivateRoute requiredRole="admin"><SlaRelatedData /></PrivateRoute>} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </div>
-    </div>
-  );
-}
-*/
 export default App;

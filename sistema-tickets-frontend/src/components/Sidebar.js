@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 
 
 const Sidebar = ({ userRole }) => {
-  console.log("rol usuario: ", userRole)
   return (
     <div className="sidebar">
       <ul>
@@ -18,18 +17,17 @@ const Sidebar = ({ userRole }) => {
         <li>
           <Link to="/registro">Usuario</Link>
         </li>
+        <li>
+          <Link to="/tickets-cerrados">Tickets Cerrados</Link>
+        </li>
         {/* Opciones exclusivas para el administrador */}
         {userRole === 'admin' && (
           <>
             <li>
               <Link to="/dashboard">Dashboard</Link>
             </li>
-            
             <li>
-              <Link to="/tickets-cerrados">Tickets Cerrados</Link>
-            </li>
-            <li>
-              <Link to="/sla-data">Datos de sla</Link>
+              <Link to="/sla-data">Datos de SLA</Link>
             </li>
           </>
         )}

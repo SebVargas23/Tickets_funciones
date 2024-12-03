@@ -27,3 +27,4 @@ yarn-error.log*
 # Backend dependencies
 /backend/env/
 **/__pycache__/
+*.pyc
