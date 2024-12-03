@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../components/apiClient';
-import { useNavigate } from 'react-router-dom';
 import { decodeToken } from '../utils';
 import Avatar from '../imagenes/Avatar.jpg';
 import '../App.css';
@@ -20,7 +19,6 @@ const RegistroUsuario = () => {
 
     const [cargos, setCargos] = useState([]);
     const [errors, setErrors] = useState({});
-    const navigate = useNavigate();
     const [userStats, setUserStats] = useState({});
     const [isAdmin, setIsAdmin] = useState(false);
 
@@ -78,14 +76,35 @@ const RegistroUsuario = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        if (formData.password !== formData.password_confirm) {
+            setErrors({ password_confirm: 'Las contraseñas no coinciden' });
+            return;
+        }
+    
+        
         // Remueve el rol si no es administrador
         const formDataToSend = isAdmin ? formData : { ...formData, role: 'usuario' };
 
         try {
             const response = await apiClient.post('registrar/', formDataToSend);
-            console.log('Usuario registrado:', response.data);
-            navigate('/login');
+            if (response) {
+               alert('El usuario se a guardado exitosamente.');
+               console.log('Usuario registrado:', response.data); 
+               setErrors({});
+               setFormData({
+                rut_usuario: '',
+                dv_rut_usuario: '',
+                nom_usuario: '',
+                correo: '',
+                telefono: '',
+                cargo: '',
+                role: 'usuario', // Rol predeterminado
+                password: '',
+                password_confirm: '',
+            });
+            }
+            
+            
         } catch (err) {
             console.error('Error en el registro:', err.response?.data || err.message);
             setErrors(err.response?.data || { error: 'Error desconocido en el registro' });
