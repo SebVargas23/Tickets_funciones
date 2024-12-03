@@ -134,6 +134,7 @@ const TicketsList = () => {
                   setFiltroUsuario(sugerencia.nom_usuario);
                   setSugerenciasUsuario([]);
                 }}
+                style={{color:"black"}}
               >
                 {sugerencia.nom_usuario}
               </li>

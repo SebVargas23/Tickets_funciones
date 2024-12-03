@@ -214,7 +214,7 @@ const Tickets = () => {
       <h2 className="guia-usuario-titulo">Creación de tickets</h2>
 
       <div className="lista-desplegable">
-        <label>Selecciona una categoría:</label>
+        <label style={{color:"black"}}>Selecciona una categoría:</label>
         <select onChange={handleGuiaChange} value={selectedCategoryId}>
           <option value={0}>Información general</option>
           {categorias.map((categoria) => (
