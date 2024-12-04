@@ -46,7 +46,7 @@ const Navbar = ({ nombreUsuario }) => {
     </div>
     <button onClick={removeToken} 
     className="navbar-logout-button"
-    >Cerrar sesion</button>
+    >Cerrar Sesión</button>
   </header>
   )
 };
