@@ -2,7 +2,7 @@
     {
       "id_categoria": 1,
       "titulo": "Soporte técnico",
-      "descripcion": "Guía para el manejo de problemas técnicos reportados por los usuarios.",
+      "descripcion": "Este conjunto de instrucciones está orientado a resolver problemas técnicos reportados por los usuarios, desde fallos simples hasta errores más complejos. La guía proporciona pasos para diagnosticar, aplicar soluciones, documentar problemas y mantener al usuario informado durante el proceso.",
       "instrucciones": [
         "Paso 1: Verificar el problema reportado.",
         "Paso 2: Hacer un diagnóstico preliminar.",
@@ -14,7 +14,7 @@
     {
       "id_categoria": 2,
       "titulo": "Hardware y equipos",
-      "descripcion": "Instrucciones para evaluar y reparar problemas de hardware.",
+      "descripcion": "Esta guía proporciona pasos detallados para evaluar, reparar o reemplazar componentes defectuosos de hardware. Desde realizar pruebas físicas hasta la instalación de nuevos equipos, es esencial para mantener el buen estado del hardware.",
       "instrucciones": [
         "Paso 1: Realizar pruebas de hardware.",
         "Paso 2: Verificar la compatibilidad de los componentes.",
@@ -26,7 +26,7 @@
     {
       "id_categoria": 3,
       "titulo": "Software corporativo",
-      "descripcion": "Guía para la instalación y configuración de software en el entorno corporativo.",
+      "descripcion": "Guía para la instalación y configuración de software utilizado en la organización. Este proceso incluye desde la validación de licencias hasta la configuración avanzada de sistemas según las necesidades corporativas.",
       "instrucciones": [
         "Paso 1: Verificar licencias y permisos.",
         "Paso 2: Instalar el software según el manual corporativo.",
@@ -38,7 +38,7 @@
     {
       "id_categoria": 4,
       "titulo": "Redes y conectividad",
-      "descripcion": "Instrucciones para solucionar problemas de conexión y configuración de red.",
+      "descripcion": "Instrucciones para identificar y resolver problemas relacionados con la conectividad a la red, configuraciones de routers, switches, servidores de red, y otros dispositivos relacionados.",
       "instrucciones": [
         "Paso 1: Comprobar el estado de la conexión.",
         "Paso 2: Verificar el hardware de red.",
@@ -50,7 +50,7 @@
     {
       "id_categoria": 5,
       "titulo": "Consultoría y asesoramiento",
-      "descripcion": "Proceso para brindar consultoría y asesoramiento a los clientes.",
+      "descripcion": "Esta guía está dirigida a aquellos que brindan consultoría o asesoramiento a clientes, ayudando a entender sus necesidades y a diseñar soluciones efectivas.",
       "instrucciones": [
         "Paso 1: Entender las necesidades del cliente.",
         "Paso 2: Ofrecer opciones de solución.",
@@ -62,7 +62,7 @@
     {
       "id_categoria": 6,
       "titulo": "Mantenimiento preventivo",
-      "descripcion": "Guía para realizar mantenimiento preventivo en equipos y sistemas.",
+      "descripcion": "Instrucciones para garantizar la seguridad de los sistemas y la protección de los datos de la organización. Incluye la implementación de políticas de seguridad, auditorías y la capacitación de los empleados.",
       "instrucciones": [
         "Paso 1: Realizar un inventario del hardware y software.",
         "Paso 2: Programar mantenimiento regular para cada equipo.",
@@ -74,7 +74,7 @@
     {
       "id_categoria": 7,
       "titulo": "Seguridad informática",
-      "descripcion": "Instrucciones para asegurar los sistemas y datos de la organización.",
+      "descripcion": "Instrucciones para garantizar la seguridad de los sistemas y la protección de los datos de la organización. Incluye la implementación de políticas de seguridad, auditorías y la capacitación de los empleados.",
       "instrucciones": [
         "Paso 1: Implementar políticas de seguridad para los usuarios.",
         "Paso 2: Usar contraseñas seguras y cambiar las contraseñas regularmente.",

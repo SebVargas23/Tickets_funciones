@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+
 const Sidebar = ({ userRole }) => {
   return (
     <div className="sidebar">
@@ -13,7 +14,12 @@ const Sidebar = ({ userRole }) => {
         <li>
           <Link to="/tickets-list">Lista de Tickets</Link>
         </li>
-
+        <li>
+          <Link to="/registro">Usuario</Link>
+        </li>
+        <li>
+          <Link to="/tickets-cerrados">Tickets Cerrados</Link>
+        </li>
         {/* Opciones exclusivas para el administrador */}
         {userRole === 'admin' && (
           <>
@@ -21,10 +27,7 @@ const Sidebar = ({ userRole }) => {
               <Link to="/dashboard">Dashboard</Link>
             </li>
             <li>
-              <Link to="/registro">Registro de Usuario</Link>
-            </li>
-            <li>
-              <Link to="/tickets-cerrados">Tickets Cerrados</Link>
+              <Link to="/sla-data">Datos de SLA</Link>
             </li>
           </>
         )}

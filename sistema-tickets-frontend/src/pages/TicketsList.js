@@ -55,12 +55,6 @@ const TicketsList = () => {
           apiClient.get('servicios/', { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
-        console.log(ticketsRes.data);
-        console.log(usuariosRes.data); 
-        console.log(categoriasRes.data);
-        console.log(prioridadesRes.data)
-        console.log(estadosRes.data)
-        console.log(serviciosRes.data);
         const estadoCerrado = estadosRes.data.find(estado => estado.nom_estado === "Cerrado")?.id;
         const openTickets = ticketsRes.data.filter(ticket => ticket.estado !== estadoCerrado);
         
@@ -104,10 +98,6 @@ const TicketsList = () => {
   
 
   const aplicarFiltros = () => {
-    console.log("Filtro Usuario:", filtroUsuario);
-    console.log("Filtro Categoria:", filtroCategoria);
-    console.log("Filtro Prioridad:", filtroPrioridad);
-    console.log("Filtro Estado:", filtroEstado);
 
     return tickets.filter(ticket => {
       const cumpleUsuario = filtroUsuario ? ticket.user?.toLowerCase().includes(filtroUsuario.toLowerCase()) : true;
@@ -144,6 +134,7 @@ const TicketsList = () => {
                   setFiltroUsuario(sugerencia.nom_usuario);
                   setSugerenciasUsuario([]);
                 }}
+                style={{color:"black"}}
               >
                 {sugerencia.nom_usuario}
               </li>

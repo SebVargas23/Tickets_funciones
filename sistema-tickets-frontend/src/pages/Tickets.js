@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Modal from 'react-modal'; // Modal para el formulario
 import '../App.css';
+import '../styles/tickets.css'
 import guias from '../json_test/guias.json';
 import apiClient from '../components/apiClient';
 
@@ -24,34 +25,37 @@ const Tickets = () => {
   const [prioridades, setPrioridades] = useState([]);
   const [servicios, setServicios] = useState([]);
   const [estados, setEstados] = useState([]);
+  const [activeStep, setActiveStep] = useState(null);
   
   const [modalIsOpen, setModalIsOpen] = useState(false); // Estado para el modal
-  const [selectedCategoryId, setSelectedCategoryId] = useState(NaN);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(0);
   const [guiaContenido, setGuiaContenido] = useState(null);
 
   const handleGuiaChange = (e) => {
     const categoriaId = parseInt(e.target.value);
-    
-    setSelectedCategoryId(categoriaId);
-    if (isNaN(selectedCategoryId)) {
-      setGuiaContenido(null); // Si no hay categoría, no hay contenido
+  
+    // If categoriaId is NaN, set the content to null
+    if (isNaN(categoriaId)) {
+      setGuiaContenido(0); // Si no hay categoría, no hay contenido
     } else {
-      // Aquí busca el contenido de la guía basado en el id de la categoría
-      const guia = guias.find(guia => guia.id_categoria === Number(categoriaId));
-      console.log(e.target.value)
-      setGuiaContenido(guia || null);
+      setSelectedCategoryId(categoriaId);  // Update the selected category state
+  
+      // Busca el contenido de la guía basado en el id de la categoría
+      const guia = guias.find(guia => guia.id_categoria === categoriaId);
+      setGuiaContenido(guia || 0);
       
       const relatedService = servicios.find(
         (servicio) => servicio.categoria_id === categoriaId
       );
-
+  
       setFormData((prevData) => ({
         ...prevData,
         categoria: categoriaId, // Establece la categoría en formData
         servicio: relatedService ? relatedService.id : '',
       }));
     }
-  }; // maneja cambios en el la guia
+  };
+   // maneja cambios en el la guia
   const handleOpenModal = () => {
     setModalIsOpen(true);
   }; // maneja el abrir el modal
@@ -66,6 +70,13 @@ const Tickets = () => {
     }));
   }; // manjea el cerrar el modal
 
+  const toggleStep = (stepId) => {
+    if (activeStep === stepId) {
+      setActiveStep(null); // Cierra el paso si ya está abierto
+    } else {
+      setActiveStep(stepId); // Abre el paso
+    }
+  };
   useEffect(() => {
     const fetchData = async (url, setState) => {
       const token = localStorage.getItem('token');
@@ -81,9 +92,7 @@ const Tickets = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
-        console.log(response.data)
         setState(response.data);
-        console.log('data: ', response.data)
       } catch (error) {
         console.error(`Error al cargar los datos desde ${url}:`, error);
       }
@@ -135,15 +144,7 @@ const Tickets = () => {
     const adjustedData = {
       ...formData,
     };
-    console.log(formData.titulo,
-      formData.comentario,
-      formData.categoria,
-      formData.prioridad,
-      formData.servicio,
-      formData.estado)
-    console.log(adjustedData)
     const token = localStorage.getItem('token');
-    console.log(token)
     if (!token) {
       alert('No estás autenticado. Por favor, inicia sesión.');
       navigate('/login');
@@ -175,14 +176,47 @@ const Tickets = () => {
       alert('Hubo un problema al crear el ticket');
     }
   }; // manda request post con datos importantes
+  const pasos = [
+    {
+      id: 1,
+      titulo: 'Paso 1: Leer la guía de autoayuda',
+      subpasos: [
+        'Abre la guía desde el menú de autoayuda.',
+        'Lee las instrucciones básicas para entender cómo resolver tu problema.',
+        'Sigue los pasos indicados en la guía.',
+        'Si las instrucciones no solucionan tu problema, continúa al siguiente paso y crea un ticket.',
+      ],
+    },
+    {
+      id: 2,
+      titulo: 'Paso 2: Crear un ticket',
+      subpasos: [
+        'Haz clic en "Crear Ticket" desde el menú.',
+        'La categoría se seleccionará automáticamente según la guía que hayas leído.',
+        'Si la categoría no es correcta, podrás cambiarla manualmente.',
+        'Rellena los datos del formulario con una descripción clara de tu problema.',
+        'Revisa todo antes de hacer clic en "Crear Ticket".',
+      ],
+    },
+    {
+      id: 3,
+      titulo: 'Paso 3: Revisar el estado del ticket',
+      subpasos: [
+        'Ve a "Lista de Tickets" en el menú para ver los tickets creados.',
+        'Selecciona el ticket que quieres revisar.',
+        'Revisa su estado y los comentarios proporcionados.',
+        'Si necesitas más ayuda, puedes agregar comentarios o cerrar el ticket si ya se resolvió.',
+      ],
+    },
+  ];
   return (
     <div className="guia-usuario-container">
       <h2 className="guia-usuario-titulo">Creación de tickets</h2>
 
       <div className="lista-desplegable">
-        <label>Selecciona una categoría:</label>
+        <label style={{color:"black"}}>Selecciona una categoría:</label>
         <select onChange={handleGuiaChange} value={selectedCategoryId}>
-          <option value="">Información general</option>
+          <option value={0}>Información general</option>
           {categorias.map((categoria) => (
             <option key={categoria.id} value={categoria.id}>
               {categoria.nom_categoria}
@@ -192,18 +226,51 @@ const Tickets = () => {
       </div>
 
       {/* Renderiza información general si no hay categoría seleccionada */}
-      {isNaN(selectedCategoryId) ? (
-        <p>infro general</p>
+      {isNaN(selectedCategoryId) || selectedCategoryId === null || selectedCategoryId === 0 ? (
+      <div className="guia-container">
+      <h3>Guía de Usuario</h3>
+        <p>Esta guía te ayudará a usar el sistema de autoayuda y a gestionar tus tickets de forma eficiente.</p>  
+      {pasos.map((paso) => (
+        <div key={paso.id} className="paso">
+          <h4
+            className="expand-title"
+            onClick={() => toggleStep(paso.id)}
+          >
+            {paso.titulo}
+            <span className={`expand-icon ${activeStep === paso.id ? 'open' : ''}`}>
+              &#9660;
+            </span>
+          </h4>
+          <ul className={`subpasos ${activeStep === paso.id ? 'active' : ''}`}>
+            {paso.subpasos.map((subpaso, index) => (
+              <li key={index} className="subpaso">{subpaso}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
       ) : (
         // Renderiza las instrucciones de la guía seleccionada
         guiaContenido && (
-          <div className="guia-contenido">
+          <div className="guia-container">
             <h3>{guiaContenido.titulo}</h3>
-            <ul>
-              {guiaContenido.instrucciones.map((instruccion, index) => (
-                <li key={index}>{instruccion}</li>
-              ))}
-            </ul>
+            <p>{guiaContenido.descripcion}</p>
+              <div key={0} className="paso">
+              <h4
+                className="expand-title"
+                onClick={() => toggleStep(0)}
+              >
+               instrucciones 
+              <span className={`expand-icon ${activeStep === 0 ? 'open' : ''}`}>
+                &#9660;
+              </span>
+              </h4>
+                <ul className={`subpasos ${activeStep === 0 ? 'active' : ''}`}>
+                  {guiaContenido.instrucciones.map((instruccion, index) => (
+                    <li className="subpaso" key={index}>{instruccion}</li>
+                  ))}
+                </ul>
+              </div>
           </div>
         )
       )}
