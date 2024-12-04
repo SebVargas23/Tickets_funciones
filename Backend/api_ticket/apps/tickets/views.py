@@ -384,6 +384,11 @@ def list_usuarios(request):
     return Response(serializer.data)
 
 
+class retrieve_feedback(generics.RetrieveUpdateAPIView):
+    queryset = EvaluacionTicket.objects.all()
+    serializer_class = EvaluacionTicketSerializer
+    lookup_field = "ticket_id"
+    
 @api_view(['POST'])
 def create_or_update_evaluacion(request, ticket_id):
     try:

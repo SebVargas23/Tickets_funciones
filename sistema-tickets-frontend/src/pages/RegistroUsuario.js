@@ -23,16 +23,6 @@ const RegistroUsuario = () => {
     const [userStats, setUserStats] = useState({});
     const [isAdmin, setIsAdmin] = useState(false);
 
-    // Mapeo de ID de departamento a nombres de departamento
-    const departamentos = {
-        1: 'TI',
-        2: 'P&O',
-        3: 'Marketing',
-        4: 'Merchandising',
-        5: 'Finanzas',
-        6: 'Compliance',
-        7: 'EBP',
-    };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -45,6 +35,7 @@ const RegistroUsuario = () => {
                 try {
                     const response = await apiClient.get(`usuarios/${decoded.user_id}/`);
                     setUserStats(response.data);
+                    console.log(response.data);
                 } catch (error) {
                     console.error('Error al obtener estadísticas del usuario:', error);
                 }
@@ -175,7 +166,7 @@ const RegistroUsuario = () => {
                 <h2>{userStats.nom_usuario || "Usuario"}</h2>
                 <p>
                     {userStats.cargo?.nom_cargo
-                        ? `${userStats.cargo.nom_cargo} (${departamentos[userStats.cargo.departamento] || "Sin departamento"})`
+                        ? `${userStats.cargo.nom_cargo} (${userStats.cargo.departamento})`
                         : "Cargo no asignado"}
                 </p>
                 <p className="description">
