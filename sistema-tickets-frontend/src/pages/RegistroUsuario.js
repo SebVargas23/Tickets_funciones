@@ -35,7 +35,6 @@ const RegistroUsuario = () => {
                 try {
                     const response = await apiClient.get(`usuarios/${decoded.user_id}/`);
                     setUserStats(response.data);
-                    console.log(response.data);
                 } catch (error) {
                     console.error('Error al obtener estadísticas del usuario:', error);
                 }

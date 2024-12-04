@@ -130,12 +130,20 @@ class Ticket(models.Model):
     def __str__(self):
         return f"ID {self.id} ({self.estado.nom_estado}) :  {self.titulo} - estado: {self.sla_status} - propetario: {self.user.nom_usuario}"
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs) 
-        EvaluacionTicket.objects.create(
-            ticket = self,
-            nota = 3,
-            feedback = ""
+        # Save the Ticket object first
+        super().save(*args, **kwargs)
+
+        # Check if an EvaluacionTicket already exists for this ticket
+        evaluacion, created = EvaluacionTicket.objects.get_or_create(
+            ticket=self,  # This is the ticket for which the evaluation is created or updated
+            defaults={'nota': 3, 'feedback': ''}  # This sets default values if the EvaluacionTicket is created
         )
+        if not created:
+            # Optionally, you can update the EvaluacionTicket if needed
+            evaluacion.nota = 3  # You can set different logic for updating
+            evaluacion.feedback = ''
+            evaluacion.save()
+
         return
 
 
