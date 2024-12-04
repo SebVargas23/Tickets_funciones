@@ -266,7 +266,7 @@ const EditTicket = ({ userRole }) => {
                                 Calificación Guardada: 
                                 {emojis.find((e) => e.value === evaluacion.nota)?.label || 'No calificado'}
                             </p>
-                            <p>Comentario Guardado: {evaluacion.feedback || 'Sin coment arios'}</p>
+                            <p>Comentario Guardado: {evaluacion.feedback || 'Sin comentarios'}</p>
                         </div>
 
                         <div className="feedback-section">
